@@ -1,0 +1,5985 @@
+第1章  JSP概述
+ 
+例子1
+ 
+example1_1.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312"%>
+<HTML>
+<BODY BGCOLOR=yellow>
+<FONT Size=3>
+<P>这是一个简单的JSP页面
+    <%  
+int i, sum=0;
+        for(i=1;i<=100;i++)
+        {  
+sum=sum+i;
+        }
+    %>
+<P>  1到100的连续和是：<%=sum %>
+</FONT>
+</BODY>
+</HTML>
+第2章  JSP页面与JSP标记
+例子1
+example2_1.jsp
+<%@ page contentType="text/html;charset=GB2312" %>  <!-- jsp指令标记 -->
+<%@ page import="java.util.Date"  %>                   <!-- jsp指令标记 -->
+<%!   
+Date date;                                   // 数据声明
+      int sum;
+      public int getFactorSum(int n)           // 方法声明 
+      { 
+ for(int i=1;i<n;i++)  
+         { 
+if(n%i==0)
+              sum=sum+i;
+         }
+        return sum; 
+      }
+  %>
+<HTML>
+<BODY bgcolor=cyan>                         <!—html标记 --> 
+<FONT size=4><P>程序片创建Date对象：
+   <% 
+date=new Date();                     //java程序片 
+     　 out.println("<BR>"+date+"<BR>");
+     　 int m=100;
+   %>
+   <%= m %>                                    <!-- Java表达式 --> 
+   的因子之和是(不包括<%=m%>):
+   <%= getFactorSum(m)  %>                   <!-- Java表达式 --> 
+</FONT>
+</BODY>
+</HTML>
+例子2
+example2_2.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML>
+<BODY BGCOLOR=cyan>
+<FONT size=4>
+  <%! 
+int i=0;
+  %>
+  <% 
+ i++;
+  %>
+<P>您是第  <%=i%>  个访问本站的客户。
+</FONT>
+</BODY>
+</HTML>
+例子3
+example2_3.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY bgcolor=cyan ><FONT size=2>
+    <%! final double PI=Math.PI;
+        double r;
+        double getArea(double a)
+        {  return PI*a*a;  
+        }
+        double getLength(double a) 
+        {  return 2*PI*a;
+        }
+    %>
+    <%  r=100;
+        out.println("调用getArea方法计算半径是"+r+"的园的面积：");
+        double area=getArea(r);
+        out.println(area);
+        r=50;
+        out.println("<BR>调用getLength方法计算半径是"+r+"的园的周长：");
+        double length=getLength(r);
+        out.println(length); 
+    %>
+</FONT></BODY></HTML>
+例子4
+example2_4.jsp
+ 
+<%@ page contentType="text/html;Charset=GB2312" %>
+<HTML><BODY>
+    <%! int count=0;                //被客户共享的count
+        synchronized void setCount()  //synchronized修饰的方法
+        {   count++;
+        }
+    %>
+    <%  setCount();
+        out.println("您是第"+count+"个访问本站的客户");   
+    %>
+</BODY></HTML>
+例子5
+example2_5.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY bgcolor=cyan><FONT size=3>
+ <P> 请输入E-mail：<BR>
+  <FORM action="" method=get name=form>
+    <INPUT type="text"  name="client"  value="1"> 
+    <INPUT TYPE="submit" value="送出" name=submit>
+  </FORM> 
+  <%  String str=request.getParameter("client");
+      if(str!=null)
+       { int index=str.indexOf("@");
+         if(index==-1)
+         {
+  %>
+           <BR>您的E-mail地址中没有@。
+  <%
+         }
+        else
+         { int space=str.indexOf(" ");
+           if(space!=-1)
+           {
+  %>       <BR>您的E-mail地址含有非法的空格。
+  <%       }  
+           else
+           { int start=str.indexOf("@");
+             int end=str.lastIndexOf("@");
+             if(start!=end)
+             {
+  %>           <BR>您的E-mail地址有两个以上的符号：@。
+  <%         }
+             else
+             {  out.print("<BR>"+str);
+  %>           <BR>您的E-mail地址书写正确。
+  <%         }
+            }
+         }
+       }
+  %>
+</FONT></BODY></HTML>
+例子6
+example2_6.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY  bgcolor=cyan><FONT size=3>
+<% double x=0.9,y=3;
+%>
+<P> Sin(<%=x%>)除以<%=y%>等于 
+  <%=Math.sin(x)/y%>
+ <p><%=y%>的平方是：
+  <%=Math.pow(y,2)%>
+<%  x=19;
+    y=32;
+%>
+<P><%=x%>乘<%=y%>等于
+  <%=x*y%>
+<P> <%=y%>的平方根等于
+  <%=Math.sqrt(y)%>
+ <P><%=y%>大于<%=x%>吗？回答：
+  <%=y>x%>
+</FONT></BODY></HTML>
+例子7
+Example2_7.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY>
+ <P> 请输入三角形的三个边a,b,c的长度:
+<!-- 以下是HTML表单，向服务器发送三角形的三个边的长度 -->
+  <FORM action=" " method=post name=form>
+       <P>请输入三角形边a的长度:<INPUT type="text" name="a">
+       <P>请输入三角形边b的长度:<INPUT type="text" name="b">
+       <P>请输入三角形边c的长度:<INPUT type="text" name="c">
+       <INPUT TYPE="submit" value="送出" name=submit>
+  </FORM>  
+ <%--获取客户提交的数据--%>
+  <% String string_a=request.getParameter("a"),
+     string_b=request.getParameter("b"),
+     string_c=request.getParameter("c");
+     double a=0,b=0,c=0;
+  %>
+  <%--判断字符串是否是空对象,如果是空对象就初始化--%>
+      <%if(string_a==null)
+           { string_a="0";
+             string_b="0";
+             string_c="0";
+           } 
+      %>
+   <%--求出边长，并计算面积--%>
+       <%try{ a=Double.valueOf(string_a).doubleValue();
+               b=Double.valueOf(string_b).doubleValue(); 
+               c=Double.valueOf(string_c).doubleValue();
+               if(a+b>c&&a+c>b&&b+c>a)
+                 {double p=(a+b+c)/2.0;
+                  double mianji=Math.sqrt(p*(p-a)*(p-b)*(p-c));
+                  out.print("<BR>"+"三角形面积："+mianji); 
+                 }    
+                else
+                 { out.print("<BR>"+"您输入的三边不能构成一个三角形");
+                 }
+              }
+            catch(NumberFormatException e)
+                  { out.print("<BR>"+"请输入数字字符");
+                  }
+     %> 
+</BODY></HTML> 
+例子8
+first.jsp
+ 
+<%@ page contentType="text/html;Charset=GB2312" %> 
+<HTML><BODY BGCOLOR=cyan>                     
+<FONT Size=3>                                   
+<P>使用html处理所接受到的信息.
+   <input type=text size=10>                                    
+</FONT></BODY></HTML>
+second.jsp
+<%@ page contentType="application/msword" %> 
+<HTML><BODY BGCOLOR=cyan>                     
+<FONT Size=8>                                   
+<P>启动MS-Word应用程序处理所接受到的信息.
+ <input type=text size=10>                                        
+</FONT></BODY></HTML>
+例子9
+example2_9.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY bgcolor=cyan>
+<H3>  <%@ include file="Hello.txt" %>
+</H3>
+</BODY></HTML>
+example2_10.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY Bgcolor=cyan><FONT size=3>
+<P>请输入一个正数,单击按钮求这个数的平方根。
+<%@ include file="computer.jsp"%>
+</FONT></BODY></HTML>
+例子11
+Hello.txt
+ 
+你好，祝学习进步！
+<BR>学习JSP要有Java语言的基础。
+<BR>要认真学习JSP的基本语法。
+image.html
+ 
+<image src="a.jpg" width=60 height=60>animal</iamge>
+ 
+example2_11.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY BGCOLOR=Cyan><FONT Size=2>
+ <table border=1>
+ <tr><td>加载的文件</td>
+     <td>加载的图像</td>
+ </tr>
+ <tr><td><jsp:include page="Myfile/Hello.txt" /></td>
+     <td><jsp:include page="image.html" /></td>
+ </tr>
+ </table>
+</FONT></BODY></HTML>
+例子12
+ 
+ 
+tom.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY>
+    <%   String str=request.getParameter("computer"); //获取值
+         int n=Integer.parseInt(str);
+         int sum=0;
+         for(int i=1;i<=n;i++)
+            { sum=sum+i;
+            }
+    %>
+<P> 从1到<%=n%>的连续和是： <%=sum%>
+</BODY></HTML>
+ 
+example2_12.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY>
+ <P>加载文件效果：
+   <jsp:include page="tom.jsp">
+     <jsp:param name="computer" value="300" />
+   </jsp:include>
+</BODY></HTML>
+例子13
+example2_13.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY>
+ <% double i=Math.random();
+    if(i>0.5)
+    {
+ %>
+     <jsp:forward page="example2_1.jsp" />
+ <% }
+   else
+    {
+ %>  <jsp:forward page="example2_2.jsp" />
+ <% }
+ %><P>  
+例子14
+come.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY bgcolor=cyan><FONT Size=5>
+<%   String str=request.getParameter("number");
+     double n=Double.parseDouble(str);
+%>
+   <P>您传过来的数值是:<BR>
+    <%=n%>
+</FONT></BODY></HTML>
+ 
+example2_14.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY>
+ <%  double i=Math.random();
+ %>
+   <jsp:forward page="come.jsp" >
+      <jsp:param name="number" value="<%=i%>" />
+   </jsp:forward> 
+</BODY></HTML>
+例子15
+example2_15.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY>
+  <jsp:plugin type="applet"code="B.class" jreversion="1.2" width="200" height ="260" >
+     <jsp:fallback>
+        Plugin tag OBJECT or EMBED not supported by browser. 
+     </jsp:fallback>
+</jsp:plugin>
+</BODY></HTML>
+第3章  Tag文件与Tag标记
+example3_1.jsp
+ 
+<%@ page contentType="text/html;Charset=GB2312" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="beijing"%>
+<%@ taglib tagdir="/WEB-INF/tags/geng" prefix="dalian"%>
+<html><body bgcolor=cyan>
+  <h3>以下是调用Tag文件的效果：</h3>
+      <beijing:OddSum />
+  <h3>以下是调用Tag文件的效果：</h3>
+      <dalian:EventSum />
+</body></html>
+OddSum.tag
+<P>这是一个Tab文件，负责计算1～100内的奇数之和：
+  <%  int sum=0,i=1;
+      for(i=1;i<=100;i++)
+      {   if(i%2==1)
+           sum=sum+i;
+      }
+     out.println(sum);
+  %>    
+EvenSum.tag
+<P>这是一个Tab文件，负责计算1～100内的偶数之和：
+  <%  int sum=0,i=1;
+      for(i=1;i<=100;i++)
+      {   if(i%2==0)
+           sum=sum+i;
+      }
+     out.println(sum);
+  %>    
+例子2
+ 
+ 
+example3_2.jsp
+ 
+<%@ page contentType="text/html;Charset=GB2312" %>
+<%@ taglib prefix="look" tagdir="/WEB-INF/tags" %>
+<HTML>
+    <look:Show>
+     北京奥运圆满成功!
+    </look:Show>
+    <look:Show>
+      I Love this Game!
+    </look:Show>
+    <look:Show>
+     欢迎您!
+    </look:Show>
+</HTML>
+Show.tag
+ 
+<body bgcolor=yellow><P>
+<% int size=1;
+   for(int i=1;i<=3;i++)
+   {  size=size+1;
+%>    <font size=<%=size%>>
+         <jsp:doBody />
+      </font>
+<% }
+%>
+</P></body>
+example3_3.jsp
+ 
+<%@ page contentType="text/html;Charset=GB2312" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="computer"%>
+<HTML><BODY>
+   <H3>以下是调用Tag文件的效果：</H3>
+   <computer:Trangle sideA="5" sideB="6" sideC="7"/>
+</BODY></HTML>
+Trangle.tag
+ 
+<h4>这是一个Tag文件，负责计算三角形的面积。
+<%@ attribute name="sideA" required="true" %>
+<%@ attribute name="sideB" required="true" %>
+<%@ attribute name="sideC" required="true" %>
+  <%!   public String getArea(double a,double b,double c) 
+        {  if(a+b>c&&a+c>b&&c+b>a) 
+           {  double p=(a+b+c)/2.0;
+              double area=Math.sqrt(p*(p-a)*(p-b)*(p-c)) ;
+               return "<BR>三角形的面积:"+area;
+           }
+          else
+          {  return("<BR>"+a+","+b+","+c+"不能构成一个三角形,无法计算面积");
+          }
+       }
+  %>
+  <%  out.println("<BR>JSP页面传递过来的三条边："+sideA+","+sideB+","+sideC);
+      double a=Double.parseDouble(sideA);
+      double b=Double.parseDouble(sideB);
+      double c=Double.parseDouble(sideC);
+      out.println(getArea(a,b,c));
+  %>
+例子4
+ 
+ 
+example3_4.jsp
+ 
+<%@ page contentType="text/html;Charset=GB2312" %>
+<%@ page import="java.util.*" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="show"%>
+<HTML><BODY bgcolor=cyan>
+   <% LinkedList listName=new LinkedList();
+      LinkedList listScore=new LinkedList();
+      listName.add("张三");
+      listScore.add(new Double(87));  
+      listName.add("李四");
+      listScore.add(new Double(65)); 
+      listName.add("刘小记");
+      listScore.add(new Double(57));  
+      listName.add("王大林");
+      listScore.add(new Double(99)); 
+      listName.add("孙进步");
+      listScore.add(new Double(88));   
+   %>    
+  <p>成绩单:
+  <show:ShowResult title="姓名" item="高等数学"
+listName="<%=listName%>" listScore="<%=listScore%>"/>
+</BODY></HTML>
+ShowResul.tag
+ 
+<%@ attribute name="listName" required="true"  type="java.util.LinkedList" %>
+<%@ attribute name="listScore" required="true" type="java.util.LinkedList" %>
+<%@ attribute name="title" required="true" %>
+<%@ attribute name="item" required="true" %>
+<%   for(int i=0;i<listName.size();i++)
+     { for(int j=i+1;j<listName.size();j++)
+        { double a=((Double)listScore.get(i)).doubleValue(); 
+          double b=((Double)listScore.get(j)).doubleValue();
+          if(b<a)
+          {  String temp=(String)listName.get(i);
+             Double r=(Double)listScore.get(i);
+             listName.set(i,(String)listName.get(j));
+             listName.set(j,temp);
+             listScore.set(i,(Double)listScore.get(j));
+             listScore.set(j,r);
+          } 
+        }
+     }
+   out.print("<table border=1>");
+   out.print("<tr>");
+      out.print("<th>"+title+"</th>"); 
+      out.print("<th>"+item+"</th>"); 
+   out.print("<tr>");
+   for(int k=0;k<listName.size();k++)
+     { out.print("<tr>");
+       double score=(Double)listScore.get(k);
+       String name=(String)listName.get(k);
+       if(score<60)
+        { out.print("<td bgcolor=yellow>"+name+"</td>"); 
+          out.print("<td bgcolor=yellow>"+score+"</td>");
+        } 
+       else
+        { out.print("<td>"+name+"</td>"); 
+          out.print("<td>"+score+"</td>"); 
+        }
+       out.print("<tr>");
+     }
+  out.print("</table>");
+%>
+例子5
+ 
+ 
+useOne.jsp
+ 
+<%@ page contentType="text/html;Charset=GB2312" %>
+<%@ page import ="java.text.*" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="computer"%>
+<HTML><BODY bgcolor=cyan>
+  <computer:GetRoots coefficientA="3" coefficientB="6" coefficientC="-2"/>
+  <h4> 方程的根保留3位小数点,并计算两个根的和:
+  <%   NumberFormat f=NumberFormat.getInstance();
+       f.setMaximumFractionDigits(3);
+       double r1=rootOne.doubleValue();  //rootOne是GetRoot.tag文件返回的Double型对象
+       double r2=rootTwo.doubleValue();  //rootTwo是GetRoot.tag文件返回的Double型对象
+       String s1=f.format(r1);
+       String s2=f.format(r2);
+       out.println("<br>根1:"+s1);
+       out.println("<br>根2:"+s2);
+       double sum=r1+r2;
+       out.println("<br>根1与根2之和:"+sum);
+       SimpleDateFormat matter1=new SimpleDateFormat("yyyy/MM/dd,HH 时 mm分 ss秒");
+       String timePattern=matter1.format(time);//time是GetRoot.tag文件返回的Date型对象
+       out.println("<h3>当前时间:"+timePattern);
+ %>  
+</BODY></HTML>
+useTwo.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import ="java.text.*" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="computer"%>
+<HTML><BODY bgcolor=cyan>
+  <computer:GetRoots coefficientA="3" coefficientB="6" coefficientC="-2"/>
+  <h4> 方程的根保留5位小数点,并计算两个根的积:
+  <%   NumberFormat f=NumberFormat.getInstance();
+       f.setMaximumFractionDigits(5);
+       double r1=rootOne.doubleValue();   
+       double r2=rootTwo.doubleValue();  
+       String s1=f.format(r1);
+       String s2=f.format(r2);
+       out.println("<br>根1:"+s1);
+       out.println("<br>根2:"+s2);
+       double ji=r1*r2;
+       out.println("<br>根1与根2之积:"+ji);
+       SimpleDateFormat matter1=new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss(E)");
+       String timePattern=matter1.format(time);
+       out.println("<h3>当前时间:"+timePattern);
+ %>  
+</BODY></HTML>
+ 
+GetRoot.tag
+ 
+<%@ tag import="java.util.*" %>
+<%@ attribute name="coefficientA" required="true" %>  
+<%@ attribute name="coefficientB" required="true" %>
+<%@ attribute name="coefficientC" required="true" %>
+<%@ variable name-given="time" variable-class="java.util.Date" scope="AT_END" %>
+<%@ variable name-given="rootOne" variable-class="java.lang.Double" scope="AT_END" %>
+<%@ variable name-given="rootTwo" variable-class="java.lang.Double" scope="AT_END" %>
+<%@ variable name-given="message" scope="AT_END" %>
+  <%  double disk,r1,r2;
+      double a=Double.parseDouble(coefficientA);
+      double b=Double.parseDouble(coefficientB);
+      double c=Double.parseDouble(coefficientC);
+      disk=b*b-4*a*c;
+      if(disk>=0&&a!=0)
+      {   r1=(-b+Math.sqrt(disk))/(2*a);
+          r2=(-b-Math.sqrt(disk))/(2*a);
+         jspContext.setAttribute("rootOne",new Double(r1));  
+         jspContext.setAttribute("rootTwo",new Double(r2));
+         jspContext.setAttribute("message","一元二次方程有实根。");
+      }
+     if(disk<0&&a!=0)
+      {  jspContext.setAttribute("message","一元二次方程没有实根。");
+      }
+     if(a==0)
+      {  jspContext.setAttribute("message","这不是一元二次方程。");
+      }
+     jspContext.setAttribute("time",new Date());
+  %>
+例子6
+ 
+ 
+example3_6.jsp
+ 
+<%@ page contentType="text/html;Charset=GB2312" %>
+<%@ page import="java.util.*" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="first"%>
+<HTML><BODY bgcolor=cyan>
+  <first:FirstTag number="6"/>
+  <first:FirstTag number="8" />
+</BODY></HTML>
+FirstTag.tag
+ 
+<%@ tag import="java.util.*" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="getNumber"%>
+<%@ attribute name="number" required="true" %>
+ <getNumber:SecondTag number="<%=number%>"/>
+<% out.println("得到"+number+"个随机数:");
+   for(int i=0;i<listNumber.size();i++)
+   {  if(i<listNumber.size()-1)
+       out.print((Integer)listNumber.get(i)+",");
+      else
+       out.print((Integer)listNumber.get(i)+"。");  
+   }
+   out.println("<br>按从小到大排列:");
+   for(int i=0;i<listNumber.size();i++)
+   {  for(int j=i+1;j<listNumber.size();j++)
+      { int a=((Integer)listNumber.get(i)).intValue();
+        int b=((Integer)listNumber.get(j)).intValue(); 
+        if(b<a)
+        {  Integer temp=(Integer)listNumber.get(i);
+           listNumber.set(i,(Integer)listNumber.get(j));
+           listNumber.set(j,temp);
+        } 
+      }  
+    }
+   for(int i=0;i<listNumber.size();i++)
+   {  if(i<listNumber.size()-1)
+       out.print((Integer)listNumber.get(i)+",");
+      else
+       out.print((Integer)listNumber.get(i)+"。");  
+   }
+   int sum=0;
+   for(int i=0;i<listNumber.size();i++)
+   { sum=sum+((Integer)listNumber.get(i)).intValue();
+   }
+   out.println("<br>得到的"+number+"个随机数之和:"+sum+"<br>");
+%>
+ 
+SecondTag.tag
+ 
+<%@ tag import="java.util.*" %> 
+<%@ attribute name="number" required="true"   %>
+<%@ variable name-given="listNumber" 
+variable-class="java.util.LinkedList" scope="AT_END" %>
+<%   int count=Integer.parseInt(number);
+     LinkedList listBox=new LinkedList(),
+                listNeeded=new LinkedList();
+    for(int k=1;k<=4;k++)
+     {  for(int i=1;i<=13;i++)
+        { listBox.add(new Integer(i));
+        }
+     } 
+    while(count>0)
+    {  int m=(int)(Math.random()*listBox.size());
+       Integer integer=(Integer)listBox.get(m);
+       listNeeded.add(integer);
+       listBox.remove(m);
+       count--;
+    }
+   jspContext.setAttribute("listNumber",listNeeded);  //返回listNumber
+%>
+例子7
+example3_7.jsp
+ 
+<%@ page contentType="text/html;Charset=GB2312" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="ok"%>
+<html><body>
+<p>
+<Font size=2>Tag标记嵌套显示学生名单:</Font>
+<table border=1>
+   <ok:Biaoge color="#a9f002" name="姓名" sex="性别">
+       <ok:Biaoge  color="cyan" name="张三" sex="男"/>
+       <ok:Biaoge  color="#afc0ff" name="李小花" sex="女"/>
+       <ok:Biaoge  color="pink" name="孙六" sex="男"/>
+       <ok:Biaoge  color="#ffaaef" name="赵扬" sex="女"/>
+   </ok:Biaoge>
+</table>
+</body></html>
+Biaoge.tag
+ 
+<%@ attribute name="color" %>
+<%@ attribute name="name" %>
+<%@ attribute name="sex" %>
+ <tr bgcolor="<%=color%>"> 
+<td width=60><%=name%></td> 
+<td width=60><%=sex%></td> 
+ </tr>
+ <jsp:doBody/>
+ 
+                       
+第4章 JSP内置对象
+例子1
+example4_1.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY bgcolor=cyan><FONT size=3>
+   <FORM action="tree.jsp" method=post name=form>
+       <INPUT type="text" name="boy"> 
+       <INPUT TYPE="submit" value="Enter" name="submit">
+   </FORM> 
+</FONT></BODY></HTML>
+tree.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY bgcolor=cyan><FONT size=4>   
+   获取文本框提交的信息：
+   <%  String textContent=request.getParameter("boy");
+   %>
+   <%=textContent%> 
+<BR>获取按钮的名字：
+   <%  String buttonName=request.getParameter("submit");
+   %>
+   <%=buttonName%> 
+</FONT></BODY></HTML>  
+例子2
+example4_2.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY bgcolor=cyan><FONT size=3>
+   <FORM  action="" method=post name=form>
+         <INPUT type="text" name="girl"> 
+         <INPUT TYPE="submit" value="Enter" name="submit">
+   </FORM>  
+   <%   String textContent=request.getParameter("girl");
+        double number=0,r=0;
+        if(textContent==null)
+        {  textContent="";
+        }
+       try{ number=Double.parseDouble(textContent);
+            if(number>=0)
+              { r=Math.sqrt(number) ;
+                out.print("<BR>"+String.valueOf(number)+"的平方根：");
+                out.print("<BR>"+String.valueOf(r));
+              }
+           else
+             {  out.print("<BR>"+"请输入一个正数");
+             }
+        }
+     catch(NumberFormatException e)
+        {  out.print("<BR>"+"请输入数字字符");
+        }
+    %>
+</FONT></BODY></HTML>
+例子3
+example4_3.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY bgcolor=green><FONT size=1>
+   <FORM action="tree.jsp" method=post name=form>
+       <INPUT type="text" name="boy"> 
+       <INPUT TYPE="submit" value="提交" name="submit">
+   </FORM> 
+</FONT></BODY></HTML>
+ 
+tree.jsp:
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<MHML><BODY>   
+获取文本框提交的信息：
+   <%  String textContent=request.getParameter("boy");
+       byte  b[]=textContent.getBytes("ISO-8859-1");
+       textContent=new String(b);
+   %>
+  <%=textContent%> 
+<BR> 获取按钮的名字：
+   <% String buttonName=request.getParameter("submit");
+       byte  c[]=buttonName.getBytes("ISO-8859-1");
+       buttonName=new String(c);
+   %>
+   <%=buttonName%> 
+</BODY></HTML>
+例子4
+example4_4.jsp：
+ 
+<HTML><BODY bgcolor=cyan><FONT size=1>
+<%@ page contentType="text/html;charset=GB2312" %>
+   <FORM action="tree2.jsp" method=post name=form>
+       <INPUT type="text" name="boy"> 
+       <INPUT TYPE="submit" value="enter" name="submit">
+   </FORM> 
+</FONT></BODY></HTML>
+ 
+tree2.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="java.util.*" %>
+<MHML><BODY bgcolor=cyan><Font size=1 >   
+<BR>用户使用的协议是:
+   <% String protocol=request.getProtocol();
+       out.println(protocol);
+   %>
+<BR>获取接受用户提交信息的页面：
+   <%  String path=request.getServletPath();
+       out.println(path);
+   %>
+<BR>接受用户提交信息的长度：
+   <% int length=request.getContentLength();
+       out.println(length);
+   %>
+<BR>用户提交信息的方式：
+   <% String method=request.getMethod();
+      out.println(method);
+   %>
+<BR>获取HTTP头文件中User-Agent的值：
+   <% String header1=request.getHeader("User-Agent");
+       out.println(header1);
+   %>
+<BR>获取HTTP头文件中accept的值：
+   <% String header2=request.getHeader("accept");
+       out.println(header2);
+   %>
+<BR>获取HTTP头文件中Host的值：
+   <% String header3=request.getHeader("Host");
+       out.println(header3);
+   %>
+<BR>获取HTTP头文件中accept-encoding的值：
+   <% String header4=request.getHeader("accept-encoding");
+       out.println(header4);
+   %>
+<BR>获取用户的IP地址：
+   <% String  IP=request.getRemoteAddr();
+       out.println(IP);
+   %>
+<BR>获取用户机的名称：
+   <% String clientName=request.getRemoteHost();
+       out.println(clientName);
+   %> 
+<BR>获取服务器的名称：
+   <%  String serverName=request.getServerName();
+        out.println(serverName);
+   %> 
+<BR>获取服务器的端口号：
+   <% int serverPort=request.getServerPort();
+       out.println(serverPort);
+   %> 
+<BR>获取用户端提交的所有参数的名字：
+   <%  Enumeration en=request.getParameterNames();
+       while(en.hasMoreElements())
+        {  String s=(String)en.nextElement();
+           out.println(s);
+        }      
+      %> 
+<BR>获取头名字的一个枚举：
+   <% Enumeration enum_headed=request.getHeaderNames();
+      while(enum_headed.hasMoreElements())
+       {  String s=(String)enum_headed.nextElement();
+          out.println(s);
+       }      
+       
+   %>
+<BR>获取头文件中指定头名字的全部值的一个枚举：
+   <% Enumeration enum_headedValues=request.getHeaders("cookie");
+      while(enum_headedValues.hasMoreElements())
+      {  String s=(String)enum_headedValues.nextElement();
+         out.println(s);
+      }      
+   %>
+<BR>
+   <P> 文本框text提交的信息：
+   <%  String str=request.getParameter("boy");
+        byte  b[]=str.getBytes("ISO-8859-1");
+        str=new String(b);
+   %>
+ <BR>  <%=str%> 
+<BR> 按钮的名字：
+   <% String buttonName=request.getParameter("submit");
+       byte  c[]=buttonName.getBytes("ISO-8859-1");
+       buttonName=new String(c);
+   %>
+<BR> <%=buttonName%> 
+</FONT></BODY></HTML>
+例子5
+example4_5.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY ><Font size=2>
+<FORM action="get.jsp" Method="post" >
+  <P>输入三角形三边：
+  <BR> 边A:<Input type=text name="sideA" value=0 size=5>
+       边B:<Input type=text name="sideB" value=0 size=5>
+       边C:<Input type=text name="sideC" value=0 size=5>
+  <Input type=submit value="提交">
+</FORM>
+</FONT></BODY></HTML>
+ 
+get.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ taglib prefix="computer" tagdir="/WEB-INF/tags" %>
+<%  String a=request.getParameter("sideA");
+    String b=request.getParameter("sideB");
+    String c=request.getParameter("sideC");
+%> 
+<computer:Triangle a="<%=a%>" b="<%=b%>" c="<%=c%>"/>
+<HTML><BODY> 
+<table border=1>
+  <tr><td width=30>边A</td>
+      <td width=30>边B</td>
+      <td width=30>边C</td>
+      <td>面积</td>
+  </tr>
+   <tr><td><%=a%></td>
+       <td><%=b%></td>
+       <td><%=c%></td>
+       <td><%=result%></td>
+  </tr>
+</table>
+</BODY></HTML>
+Triangle.tag
+ 
+<%@ tag pageEncoding="GB2312" %>
+<%@ attribute name="a" required="true" %>
+<%@ attribute name="b" required="true" %>
+<%@ attribute name="c" required="true" %>
+<%@ variable name-given="result" scope="AT_END" %>
+  <%!   public String getArea(double a,double b,double c) 
+        {  if(a+b>c&&a+c>b&&c+b>a) 
+           {  double p=(a+b+c)/2.0;
+              double area=Math.sqrt(p*(p-a)*(p-b)*(p-c)) ;
+               return ""+area;
+           }
+          else
+          {  return("不能构成一个三角形,无法计算面积");
+          }
+       }
+  %>
+  <% String mess="";
+     try {  mess=
+getArea(Double.parseDouble(a),Double.parseDouble(b),Double.parseDouble(c));
+         }
+     catch(Exception e)
+         { mess ="无法计算面积"+e;
+         }
+     jspContext.setAttribute("result",mess);  //将result返回给JSP页面：get.jsp 
+  %>
+例子6
+example4_6.jsp
+ 
+<HTML><%@ page contentType="text/html;charset=GB2312" %>
+<BODY bgcolor=cyan><FONT size=2>
+ <FORM action="answer.jsp" method=post name=form>
+       球王"贝利"是哪个国家的人：<BR>
+       <INPUT type="radio" name="R" value="巴西">巴西 
+       <INPUT type="radio" name="R" value="德国">德国 
+       <INPUT type="radio" name="R" value="美国">美国 
+       <INPUT type="radio" name="R" value="法国" checked="ok">法国 
+       <BR>下列足球队中,哪些队曾获得过世界杯冠军：<BR>
+       <INPUT type="checkbox" name="item" value="法国国家队" >法国国家队
+       <INPUT type="checkbox" name="item" value="中国国家队" >中国国家队
+       <INPUT type="checkbox" name="item" value="巴西国家队" >巴西国家队
+       <INPUT type="checkbox" name="item" value="美国国家队" >美国国家队
+       <INPUT TYPE="hidden" value="喜欢世界杯!" name="secret">
+       <BR><INPUT TYPE="submit" value="提交" name="submit">
+       <INPUT TYPE="reset" value="重置">
+   </FORM> 
+</FONT></BODY></HTML>
+ 
+answer.jsp
+ 
+<%@ page contentType="text/html;Charset=GB2312" %>
+<HTML><BODY bgcolor=cyan><Font size=2>
+   <%  int score=0;
+       String countryName=request.getParameter("R"); 
+       String itemNames[]=request.getParameterValues("item");
+       String secretMess=request.getParameter("secret");
+       if(countryName.equals("巴西"))
+       {  score++;
+       }
+       if(itemNames==null)
+       {  out.print("没有选择球队<br>");
+       } 
+       else
+       {  if(itemNames[0].equals("法国国家队")&&
+             itemNames[1].equals("巴西国家队"))
+          {  score++;
+          }
+           
+       }
+      out.print("您的得分:"+score);
+      out.print("<br>您提交的答案一:"+countryName);
+      out.print("<br>您提交的答案二:");
+      if(itemNames!=null)
+       for(int k=0;k<itemNames.length;k++)
+       { out.println(" "+itemNames[k]);
+       }
+      out.println("<br> 您提交的隐藏信息:"+secretMess);  
+ %>
+</FONT></BODY></HTML>  
+例子7
+example4_7.jsp
+ 
+<HTML><%@ page contentType="text/html;charset=GB2312" %>
+<BODY bgcolor=cyan><FONT size=2 >
+   <FORM action="sum.jsp" method=post name=form>
+       选择计算和的方式:<br>
+       <Select name="sum" size=3>
+          <Option Selected value="1">计算1到n的连续和
+          <Option value="2">计算1到n的平方和
+          <Option value="3">计算1到n的立方和
+       </Select> 
+       <br>选择n的值：<br>
+       <Select name="n" >
+          <Option value="10">n=10
+          <Option value="20">n=20
+          <Option value="30">n=30
+          <Option value="40">n=40
+          <Option value="50">n=50
+          <Option value="100">n=100
+       </Select> 
+       <br><INPUT TYPE="submit" value="提交你的选择" name="submit">
+   </FORM> 
+</FONT></BODY></HTML>
+sum.jsp
+<HTML><%@ page contentType="text/html;charset=GB2312" %>
+<BODY bgcolor=cyan><FONT size=2>
+ <% long sum=0;
+    String s1=request.getParameter("sum");
+    String s2=request.getParameter("n");
+    if(s2.equals(""))
+    {  s2="0";
+    }
+    if(s1.equals("1"))
+    {  int n=Integer.parseInt(s2);
+       for(int i=1;i<=n;i++)
+       { sum=sum+i;
+       } 
+    }
+    else if(s1.equals("2"))
+    {  int n=Integer.parseInt(s2);
+       for(int i=1;i<=n;i++)
+       { sum=sum+i*i;
+       } 
+    }
+    else if(s1.equals("3"))
+    {  int n=Integer.parseInt(s2);
+       for(int i=1;i<=n;i++)
+       { sum=sum+i*i*i;
+       } 
+    }
+ %>
+<P>您的求和结果是：<%=sum%>。
+</FONT></BODY></HTML>
+例子8
+example4_8.jsp：
+ 
+<HTML><%@ page contentType="text/html;charset=GB2312" %>
+<BODY bgcolor=cyan><FONT size=1>
+<FORM action="answer.jsp" method=post name=form>
+  <table border=1>
+    <tr>
+       <th> "贝利"是哪个国人</th>
+       <th> 曾获得过世界杯冠军的球队</th>
+    </tr>
+    <tr>
+       <td>
+           <INPUT type="radio" name="R" value="巴西">巴西 
+           <INPUT type="radio" name="R" value="德国">德国 
+           <INPUT type="radio" name="R" value="美国">美国 
+           <INPUT type="radio" name="R" value="法国" checked="ok">法国
+       </td>
+       <td>
+           <INPUT type="checkbox" name="item" value="法国国家队" >法国国家队
+           <INPUT type="checkbox" name="item" value="中国国家队" >中国国家队
+           <INPUT type="checkbox" name="item" value="巴西国家队" >巴西国家队
+           <INPUT type="checkbox" name="item" value="美国国家队" >美国国家队
+           <INPUT TYPE="hidden" value="喜欢世界杯!" name="secret">
+       </td> 
+    </tr>
+    <tr>
+       <td><INPUT TYPE="submit" value="提交" name="submit"></td>
+       <td><INPUT TYPE="reset" value="重置"></td>
+    </tr>
+  </table>
+</FORM> 
+</FONT></BODY></HTML>
+例子9
+example4_9.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY bgcolor=cyan><Font size=3>
+  <FORM action="show.jsp" method=post name=form>
+   <br>选择一副图像:    <Select name="image" >
+          <Option value="sun.jpg">太阳
+          <Option value="scenery.jpg">风景
+       </Select> 
+   <br>选择视频或音乐：
+       <Select name="video" >
+          <Option value="happy.wav">好汉歌
+          <Option value="moon.wmv">故乡
+          <Option value="clock.avi">表
+       </Select> 
+   <br> <INPUT TYPE="submit" value="提交你的选择" name="submit">
+   </FORM> 
+</FONT></BODY></HTML>
+show.jsp
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY bgcolor=cyan><Font size=3>
+ <% String s1=request.getParameter("image");
+    String s2=request.getParameter("video");
+ %>
+ <image src="picture/<%=s1 %>" width=200 height=160 >图像</image>
+ <embed src="avi/<%=s2 %>" width=300 height=180 >视频</embed>
+</FONT></BODY></HTML>
+例子10
+example4_10.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML>
+<BODY bgcolor=cyan><FONT size=1 >
+ <P>我正在学习response对象的
+ <BR>setContentType方法
+ <P>将当前页面保存为word文档吗？
+  <FORM action="" method="get" name=form>
+     <INPUT TYPE="submit" value="yes" name="submit">
+   </FORM>
+ <%   String str=request.getParameter("submit");
+      if(str==null) 
+       { str="";
+       }
+      if(str.equals("yes"))
+       { response.setContentType("application/msword;charset=GB2312");
+       }
+%> 
+</FONT></BODY></HTML>
+例子11
+example4_11.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="java.awt.*" %>
+<%@ page import="java.io.*" %>
+<%@ page import="java.awt.image.*" %>
+<%@ page import="java.awt.geom.*" %>
+<%@ page import="com.sun.image.codec.jpeg.*" %>
+<HTML><BODY>  <BR> 观看旋转的椭圆
+  <FORM action="" method="post" name=form>
+     <INPUT TYPE="submit" value="观看" name="submit">
+  </FORM>
+<%String str=request.getParameter("submit");
+   if(str!=null)
+   { response.setContentType("image/jpeg");            //改变MIME类型
+     int width=260, height=260;
+     BufferedImage image = new BufferedImage(width,height,
+                                                     BufferedImage.TYPE_INT_RGB);
+     Graphics g = image.getGraphics();
+     g.setColor(Color.white);
+     g.fillRect(0, 0, width, height);
+     Graphics2D g_2d=(Graphics2D)g; 
+     Ellipse2D ellipse=new Ellipse2D. Double (20,50,120,50);
+     g_2d.setColor(Color.blue);
+     AffineTransform trans=new  AffineTransform(); 
+      for(int i=1;i<=24;i++)
+        {  trans.rotate(15.0*Math.PI/180,75,75);
+           g_2d.setTransform(trans);
+           g_2d.draw(ellipse);
+        }
+     g.dispose();
+     OutputStream outClient= response.getOutputStream();//获取指向用户端的输出流
+     JPEGImageEncoder encoder=JPEGCodec.createJPEGEncoder(outClient);
+     encoder.encode(image);
+   }
+%> 
+</BODY></HTML>
+例子12
+example4_12.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="java.util.*" %>
+<HTML><BODY bgcolor=cyan><FONT size=4>
+<P>现在的时间是：<BR>
+<%   out.println(""+new Date());
+     response.setHeader("Refresh","5");
+ %>
+</FONT></BODY></HTML>
+例子13
+example4_13.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY> 
+<P>填写姓名：<BR>
+   <FORM action="tree.jsp" method="get" name=form>
+     <INPUT TYPE="text"   name="boy">
+     <INPUT TYPE="submit" value="Enter">
+   </FORM>
+</BODY></HTML>
+ 
+tree.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY> 
+ 　<% String str=null;
+      str=request.getParameter("boy");
+      if(str==null)
+       { str="";
+       }
+      byte b[]=str.getBytes("ISO-8859-1");
+      str=new String(b);
+      if(str.equals(""))
+       { response.sendRedirect("example4_13.jsp"); 
+       }
+      else
+      {  out.print("欢迎您来到本网页！");
+         out.print(str);
+      }
+%>
+</BODY></HTML>
+例子14
+orther.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY bgcolor=yellow><FONT size=2> 
+<P>我是ch2服务目录中的页面
+<P>单击下面的超链接：<BR>
+   <A HREF="http://127.0.0.1:8080/ch4/sameWebTwo.jsp">访问sameWebTwo.jsp
+</FONT></BODY></HTML>
+</HTML>
+ 
+sameWebOne.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY bgcolor=cyan><FONT size=2> 
+<P>我是ch4服务目录中的页面
+<br>单击下面的超链接：<BR>
+   <A HREF="http://127.0.0.1:8080/ch4/sameWebTwo.jsp">访问sameWebTwo.jsp
+</FONT></BODY></HTML>
+ 
+sameWebTwo.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY bgcolor=cyan><FONT size=2> 
+<%  String mess=request.getHeader("referer");
+    if(mess==null)
+    {  mess="";
+       response.setStatus(404);
+    }
+    if(!(mess.startsWith("http://127.0.0.1:8080/ch4")))
+    {  response.setStatus(404);
+    }
+%>
+<P> 欢迎访问本页面!<BR>
+    您来自:<%=mess%>
+</FONT></BODY></HTML>
+例子15
+first.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY  bgcolor=cyan>
+   我是first.jsp页面,输入你的姓名连接到second.jsp
+   <% String id=session.getId();
+      out.println("<br>您的session对象的ID是：<br>"+id);
+   %>
+  <FORM action="two/second.jsp" method=post name=form>
+       <INPUT type="text" name="boy"> 
+       <INPUT TYPE="submit" value="送出" name=submit>
+  </FORM>  
+</BODY></HTML>
+ 
+second.jsp
+ 
+<%@ page contentType="text/html;Charset=GB2312" %>
+<HTML><BODY  bgcolor=cyan>
+   我是second.jsp页面
+   <%  String id=session.getId();
+       out.println("您的session对象的ID是：<br>"+id);
+   %>
+<BR> 单击超链接，连接到third.jsp的页面。
+<BR><A HREF="/ch4/three/third.jsp"> 欢迎去third.jsp页面！</A>   
+</BODY></HTML>
+ 
+third.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY bgcolor=cyan>
+   我是third.jsp页面
+   <%  String id=session.getId();
+       out.println("您的session对象的ID是：<br>"+id);
+   %>
+<BR> 单击超链接，连接到first.jsp的页面。
+<BR><A HREF="/ch4/first.jsp">  欢迎去first.jsp！</A>   
+</BODY></HTML>
+例子16
+first.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY  bgcolor=cyan>
+<%   String str=response.encodeURL("two/second.jsp");
+%>
+   我是first.jsp页面,输入你的姓名连接到second.jsp
+   <% String id=session.getId();
+      out.println("<br>您的session对象的ID是：<br>"+id);
+   %>
+  <FORM action="<%=str%>" method=post name=form>
+       <INPUT type="text" name="boy"> 
+       <INPUT TYPE="submit" value="送出" name=submit>
+  </FORM>  
+</BODY></HTML>
+second.jsp
+<%@ page contentType="text/html;Charset=GB2312" %>
+<%   String str=response.encodeURL("/ch4/three/third.jsp");
+%>
+<HTML><BODY  bgcolor=cyan>
+   我是second.jsp页面
+   <%  String id=session.getId();
+       out.println("您的session对象的ID是：<br>"+id);
+   %>
+<BR> 单击超链接，连接到third.jsp的页面。
+<BR><A HREF="<%=str%>"> 欢迎去third.jsp页面！</A>   
+</BODY></HTML>
+third.jsp
+<%@ page contentType="text/html;charset=GB2312" %>
+<%   String str=response.encodeURL("/ch4/first.jsp");
+%>
+<HTML><BODY bgcolor=cyan>
+   我是third.jsp页面
+   <%  String id=session.getId();
+       out.println("您的session对象的ID是：<br>"+id);
+   %>
+<BR> 单击超链接，连接到first.jsp的页面。
+<BR><A HREF="<%=str%>">  欢迎去first.jsp！</A>   
+</BODY></HTML>
+例子17
+example4_17.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY bgcolor=cyan><FONT Size=2>
+  <% session.setAttribute("customer","顾客");
+  %>
+ <P>输入您的姓名连接到第一百货：first.jsp
+   <FORM action="first.jsp" method=post name=form>
+       <INPUT type="text" name="boy"> 
+       <INPUT TYPE="submit" value="送出" name=submit>
+  </FORM>  
+</FONT></BODY></HTML>
+ 
+first.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY bgcolor=cyan><FONT Size=2>
+   <% String s=request.getParameter("boy");
+      session.setAttribute("name",s);
+   %>
+  这里是第一百货。<br>输入您想购买的商品连接到结账：account.jsp。
+  <FORM action="account.jsp" method=post name=form>
+    <INPUT type="text" name="buy"> 
+    <INPUT TYPE="submit" value="送出" name=submit>
+  </FORM>  
+</FONT></BODY></HTML>
+</HTML>
+ 
+account.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%! //处理字符串的方法
+   public String getString(String s)
+   { if(s==null)
+      {  s="";
+      }
+     try{ byte b[]=s.getBytes("ISO-8859-1");
+          s=new String(b);
+        }
+     catch(Exception e){}
+     return s;
+   }
+%>
+<HTML><BODY bgcolor=cyan><FONT Size=2>
+   <% String s=request.getParameter("buy");
+      session.setAttribute("goods",s);
+   %>
+<BR> 
+<% String 顾客=(String)session.getAttribute("customer");
+   String 姓名=(String)session.getAttribute("name");
+   String 商品=(String)session.getAttribute("goods");
+   姓名=getString(姓名);
+   商品=getString(商品);
+%>
+    这里是结账处,<%=顾客%>的姓名是：<%=姓名%>
+<br>您选择购买的商品是：<%=商品%>
+</FONT></BODY></HTML>
+例子18
+example4_18.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY bgcolor=cyan><FONT Size=2>
+  随机分给了你一个1到100之间的数，请猜！
+  <% int num=(int)(Math.random()*100)+1;
+     session.setAttribute("count",new Integer(0));
+     session.setAttribute("save",new Integer(num));
+  %>
+ <BR><A HREF="guess.jsp">去猜测这个数</A> 
+</FONT></BODY></HTML>
+ 
+guess.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="guessNumber"%>
+<HTML><BODY bgcolor=cyan><FONT Size=2>
+<%   String str=request.getParameter("guessNumber");
+     if(str==null) 
+      { str="*";
+      }
+     if(str.length()==0)
+      { str="*";
+      }
+%>
+ <guessNumber:GuessTag number="<%=str%>" />
+ 当前猜测结果：<%=message%>
+<% if(message.startsWith("您猜对了"))
+   {
+%>   <br><A HREF="example4_18.jsp">重新获得随机数</A> 
+<% }
+   else
+   {
+ %> <BR>输入您的猜测：
+    <FORM action="" method="post" name=form>
+       <INPUT type="text" name="guessNumber" > 
+       <INPUT TYPE="submit" value="送出" name="submit">
+    </FORM>
+<% }
+%>
+</FONT></BODY></HTML>
+ 
+GuessTag.tag
+ 
+<%@ tag pageEncoding="GB2312" %>
+<%@ attribute name="number" required="true" %>  
+<%@ variable name-given="message" scope="AT_END" %>
+  <%  String mess="";
+      Integer integer=(Integer)session.getAttribute("save");
+      int realnumber=integer.intValue();
+      int guessNumber=0;
+      boolean boo=true;
+      try{  guessNumber=Integer.parseInt(number);
+         }
+      catch(Exception exp)
+         {  boo=false;
+         }
+      if(boo)
+      { if(guessNumber==realnumber)
+        { int n=((Integer)session.getAttribute("count")).intValue();
+          n=n+1;
+          session.setAttribute("count",new Integer(n));
+          mess="您猜对了,这是第"+n+"次猜测";
+        } 
+        else if(guessNumber>realnumber)
+        { int n=((Integer)session.getAttribute("count")).intValue();
+          n=n+1;
+          session.setAttribute("count",new Integer(n));
+          mess="您猜大了,这是第"+n+"次猜测";
+        }
+        else if(guessNumber<realnumber)
+        { int n=((Integer)session.getAttribute("count")).intValue();
+          n=n+1;
+          session.setAttribute("count",new Integer(n));
+          mess="您猜小了,这是第"+n+"次猜测";
+        }
+        else if(number.equals("你还没开始猜测")) 
+        {  mess="你还没开始猜测";
+        }
+       jspContext.setAttribute("message",mess); //将对象message返回给JSP页面
+      }
+     else
+      {  jspContext.setAttribute("message","请输入您的猜测");
+      }
+  %>
+例子19
+example4_19.jsp
+ 
+<%@ page contentType="text/html;Charset=GB2312" %>
+<%@ page import="java.util.*" %>
+<HTML><BODY bgcolor=yellow><FONT Size=3>
+ <%  session.setMaxInactiveInterval(10);
+     boolean boo=session.isNew();
+     out.println("<br>如果你第一次访问当前web服务目录，您的会话是新的");
+     out.println("<br>如果你不是首次访问当前web服务目录，您的会话不是新的");
+     out.println("<br>会话是新的吗？："+boo);
+     out.println("<br>欢迎来到本页面，您的session允许的最长发呆时间为"+
+                        session.getMaxInactiveInterval()+"秒");
+     out.println("<br>您的session的创建时间是"+
+new Date(session.getCreationTime()));
+     out.println("<br>您的session的Id是"+session.getId()); 
+     Long lastTime=(Long)session.getAttribute("lastTime");
+     if(lastTime==null)
+       { long n=session.getLastAccessedTime();
+         session.setAttribute("lastTime",new Long(n));
+       } 
+    else
+       { long m=session.getLastAccessedTime();
+         long n=((Long)session.getAttribute("lastTime")).longValue();
+         out.println("<br>您的发呆时间大约是"+(m-n)+"毫秒,大约"+(m-n)/1000+"秒");
+         session.setAttribute("lastTime",new Long(m)); 
+       } 
+ %>
+<FONT></BODY></HTML>
+例子20
+one.jsp
+ 
+<%@ page contentType="text/html;Charset=GB2312" %>
+<%@ taglib prefix="person" tagdir="/WEB-INF/tags" %>
+<HTML><BODY size=3>
+<P>欢迎访问本站
+   <person:Count/>
+   <A href="two.jsp">欢迎去two.jsp参观</A>
+</BODY></HTML>
+two.jsp
+ 
+<%@ page contentType="text/html;Charset=GB2312" %>
+<%@ taglib prefix="person" tagdir="/WEB-INF/tags" %>
+<HTML><BODY size=3>
+<P>欢迎访问本站
+   <person:Count/>
+   <A href="one.jsp">欢迎去one.jsp参观</A>
+</BODY></HTML>
+Count.tag
+ 
+<%@ tag import="java.io.*" %>
+<FONT Size=4>
+<%!   int number=0; 
+       File file=new File("count.txt") ;   
+       synchronized void countPeople()//计算访问次数的同步方法
+        { if(!file.exists())
+           {  number++;
+              try {file.createNewFile();
+                    FileOutputStream out=new FileOutputStream("count.txt");
+                    DataOutputStream dataOut=new DataOutputStream(out);
+                    dataOut.writeInt(number);
+                    out.close();
+                    dataOut.close();
+                  }
+              catch(IOException ee){}
+           }
+          else
+           {   try{FileInputStream in=new FileInputStream("count.txt");
+                    DataInputStream dataIn=new DataInputStream(in);
+                    number=dataIn.readInt();
+                    number++;
+                    in.close();
+                    dataIn.close();
+                    FileOutputStream out=new FileOutputStream("count.txt");
+                    DataOutputStream dataOut=new DataOutputStream(out);
+                    dataOut.writeInt(number);
+                    out.close();
+                    dataOut.close();
+                 }
+               catch(IOException ee){}
+           }
+      }
+%>
+<%   String str=(String)session.getAttribute("count");
+      if(str==null)
+       { countPeople();
+         String personCount=String.valueOf(number);
+         session.setAttribute("count",personCount);
+       }
+%>
+<P><P>您是第<%=(String)session.getAttribute("count")%>
+       个访问本网站的用户。
+</Font>
+例子21
+example4_21.jsp:
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="java.util.*" %>
+<HTML><BODY bgcolor=yellow>
+  <% int a=100;long b=300;boolean c=true;
+     out.println("<H1>这是标题1字体的大小</HT1>");
+     out.println("<H2>这是标题2字体的大小</HT2>");
+     out.print("<BR>");
+     out.println(a);  out.println(b);  out.println(c);
+  %>
+  <Center>
+  <p><Font size=2 >以下是一个表格</Font> 
+  <%  out.print("<Font face=隶书 size=2 >");
+      out.println("<Table Border >");
+      out.println("<TR >");
+            out.println("<TH width=80>"+"姓名"+"</TH>");
+            out.println("<TH width=60>"+"性别"+"</TH>");
+            out.println("<TH width=200>"+"出生日期"+"</TH>");
+      out.println("</TR>");
+      out.println("<TR >");
+            out.println("<TD >"+"刘甲一"+"</TD>");
+            out.println("<TD >"+"男"+"</TD>");
+            out.println("<TD >"+"1978年5月"+"</TD>");
+      out.println("</TR>");
+      out.println("<TR>");
+            out.println("<TD >"+"林　霞"+"</TD>");
+            out.println("<TD >"+"女"+"</TD>");
+            out.println("<TD >"+"1979年8月"+"</TD>");
+             out.println("<TD width=100>"+"这是表格"+"</TD>");
+     out.println("</TR>");
+     out.println("</Table>");
+     out.print("</Font>")  ;
+  %>
+  </Center>
+</BODY></HTML>
+例子22
+submit.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY>
+ <FORM action="messagePane.jsp" method="post" name="form">
+    <P>输入您的名字：
+    <INPUT  type="text" name="peopleName">
+     <BR>
+     <P>输入您的留言标题：
+    <INPUT  type="text"  name="Title">
+     <BR>
+     <P>输入您的留言：
+    <BR>
+    <TEXTAREA name="messages" ROWs="10" COLS=36 WRAP="physical" >
+    </TEXTAREA>
+    <BR>
+    <INPUT type="submit" value="提交信息" name="submit">
+ </FORM>
+ <FORM action="showMessage.jsp" method="post" name="form1">
+    <INPUT type="submit" value="查看留言板" name="look">
+ </FORM>
+</BODY></HTML>
+ 
+messagePane.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="java.util.*" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<HTML><BODY>
+     <%! Vector v=new Vector();
+         int i=0; 
+         ServletContext  application;
+         synchronized void sendMessage(String s)
+          { application=getServletContext();;
+            v.add(s);
+            application.setAttribute("Mess",v); 
+          }
+     %> 
+     <% String name=request.getParameter("peopleName");
+        String title=request.getParameter("Title");
+        String messages=request.getParameter("messages");
+           if(name==null)
+             { name="guest"+(int)(Math.random()*10000);
+             }
+           if(title==null)
+             { title="无标题";
+             }
+           if(messages==null)
+             { messages="无信息";
+             }
+          SimpleDateFormat matter=
+          new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss");
+          String time=matter.format(new Date());
+          String s=name+"#"+title+"#"+time+"#"+messages; 
+          sendMessage(s);
+          out.print("您的信息已经提交！");
+     %>
+  <A HREF="submit.jsp" >返回留言板</A> 
+  <A HREF="showMessage.jsp" >查看留言板</A>
+</BODY></HTML>
+showMessage.jsp
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="java.util.*" %>
+<HTML><BODY bgcolor=yellow>
+  <%   Vector v=(Vector)application.getAttribute("Mess");
+       out.print("<table border=2>");
+        out.print("<tr>");
+           out.print("<td bagcolor=cyan>"+"留言者姓名"+"</td>");
+           out.print("<td bagcolor=cyan>"+"留言标题"+"</td>");
+           out.print("<td bagcolor=cyan>"+"留言时间"+"</td>");
+           out.print("<td bagcolor=cyan>"+"留言内容"+"</td>");
+       for(int i=0;i<v.size();i++)
+       {   out.print("<tr>");
+           String message=(String)v.elementAt(i);
+           byte bb[]=message.getBytes("iso-8859-1");
+           message=new String(bb);
+           String a[]=message.split("#");
+           out.print("<tr>");
+           int number=a.length-1;
+           for(int k=0;k<=number;k++) 
+           {  if(k<number)
+               { out.print("<td bgcolor=cyan >"+a[k]+"</td>");
+               }
+             else
+               {out.print("<td><TextArea rows=3 cols=12>"+a[k]+
+                           "</TextArea> </td>");
+               } 
+          }
+          out.print("</tr>");
+       } 
+      out.print("</table>");
+    %>
+ <A HREF="submit.jsp" >返回留言板</A> 
+</BODY></HTML>
+第5章  JSP中的文件操作
+例子1
+example5_1.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="java.io.*"%> 
+<HTML><BODY bgcolor=cyan><FONT Size=2>
+  <%File f1=new
+     File("D:/apache-tomcat-6.0.13/webapps/ch5","example5_1.jsp");
+     File f2=new File("jasper.sh");
+  %>
+ <br> 文件<%=f1.getName()%>是可读的吗？<%=f1.canRead()%>
+ <br>文件<%=f1.getName()%>的长度：<%=f1.length()%>字节
+ <BR> jasper.sh是目录吗？<%=f2.isDirectory()%>
+ <BR><%=f1.getName()%>的父目录是:<%=f1.getParent()%>
+ <BR> <%=f2.getName()%>的绝对路径是：<%=f2.getAbsolutePath()%>
+</FONT></BODY></HTML>
+例子2
+example5_2.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="java.io.*"%> 
+<HTML><BODY><FONT Size=2>
+  <% File dir=new
+     File("D:/apache-tomcat-6.0.13/webapps/ch5","Students");
+   %>
+ <br> 在ch5下创建一个新的目录：Students,<br>成功创建了吗？
+    <%=dir.mkdir()%>
+ <br> Students是目录吗？<%=dir.isDirectory()%>
+</FONT> </BODY></HTML>
+例子3
+example5_3.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="java.io.*"%> 
+<HTML><BODY bgcolor=cyan><FONT Size=2>
+  <%  File dir=new File("D:/apache-tomcat-6.0.13/webapps/ch5");
+      File file[]=dir.listFiles();
+   %>
+ <br>目录有：
+     <% for(int i=0;i<file.length;i++)
+        {  if(file[i].isDirectory())
+            out.print("<br>"+file[i].toString());
+        }
+     %>
+ <br>文件名字：
+     <% for(int i=0;i<file.length;i++)
+        {  if(file[i].isFile())
+            out.print("<br>"+file[i].toString());
+        }
+     %>
+</FONT></BODY></HTML>
+例子4
+example5_4.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import ="java.io.*" %>
+<HTML><BODY bgcolor=cyan><FONT Size=2>
+<%! class FileJSP implements FilenameFilter 
+     {  String str=null;
+        FileJSP(String s)
+        {  str="."+s;
+        }
+        public boolean accept(File dir,String name)
+         { return name.endsWith(str);
+         }              
+     }
+%>
+<br>ch5目录中的jsp文件:
+ <% File dir=new File("D:/apache-tomcat-6.0.13/webapps/ch5");
+    FileJSP file_jsp=new FileJSP("jsp");
+    String file_name[]=dir.list(file_jsp);
+    for(int i=0;i<file_name.length;i++)
+    {  out.print("<BR>"+file_name[i]);
+    }
+ %>
+</FONT></BODY></HTML>
+例子5
+example5_5.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import ="java.io.*" %>
+<HTML><BODY>
+  <% File f=new File("D:/apache-tomcat-6.0.13/webapps/ch5","example5_1.jsp");
+     File dir=new File("D:/apache-tomcat-6.0.13/webapps/ch5","Students");
+     boolean b1=f.delete();
+     boolean b2=dir.delete();
+  %>
+<P>文件<%=f.getName()%>成功删除了吗？<%=b1%>
+<P>目录<%=dir.getName()%>成功删除了吗？<%=b2%>
+</BODY></HTML>
+例子6
+example5_6.jsp
+ 
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import ="java.io.*" %>
+<HTML>
+<BODY bgcolor=cyan><FONT size=2>
+<%  File dir=new File("C:/","Students");
+    dir.mkdir();
+    File f=new File(dir,"hello.txt");
+    try{
+        FileOutputStream  outfile=new FileOutputStream(f);
+        BufferedOutputStream bufferout=new BufferedOutputStream(outfile);
+        byte b[]="你们好,很高兴认识你们呀！<BR>nice to meet you".getBytes();
+        bufferout.write(b);
+        bufferout.flush();
+        bufferout.close();
+        outfile.close();
+        FileInputStream  in=new FileInputStream(f);
+        BufferedInputStream bufferin=new BufferedInputStream(in);
+        byte c[]=new byte[90];
+        int n=0;
+        while((n=bufferin.read(c))!=-1)
+        {  String temp=new String(c,0,n);
+           out.print(temp); 
+        }
+        bufferin.close();
+        in.close();
+       }
+     catch(IOException e){}
+%>
+</FONT></BODY></HTML>
+例子7
+example5_7.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="file"%>
+<HTML><BODY bgcolor=yellow><Font size=3>
+<FORM action="" Method="post" >
+   输入文件的内容：
+   <br>
+    <TextArea name="ok"  Rows="10" Cols="16" ></TextArea>
+    <Input type=submit value="提交">
+</FORM>
+  <%  String str=request.getParameter("ok");
+      if(str==null)
+      { str="";
+      }  
+     byte bb[]=str.getBytes("iso-8859-1");
+     str=new String(bb);
+  %>
+  <file:WriteTag content="<%=str%>" />
+</FONT></BODY></HTML>
+WriteTag.tag
+ 
+<%@ tag pageEncoding="GB2312" %>
+<%@ tag import="java.io.*" %>
+<%@ attribute name="content" required="true" %>
+<HTML><BODY bgcolor=cyan><FONT size=2>
+<%!
+   public void writeContent(String str,File f) 
+   { try{ FileWriter outfile=new FileWriter(f);
+          BufferedWriter bufferout=new BufferedWriter(outfile);
+          bufferout.write(str);
+          bufferout.close();
+          outfile.close();
+         }
+       catch(IOException e){}
+   }
+   public String readContent(File f)
+   { StringBuffer str=new StringBuffer();
+     try{ FileReader in=new FileReader(f);
+          BufferedReader bufferin=new BufferedReader(in);
+          String temp;  
+          while((temp=bufferin.readLine())!=null)
+          {  str.append(temp); 
+          }
+          bufferin.close();
+          in.close();
+         }
+     catch(IOException e){}
+     return new String(str);
+    }
+%>
+<%  File dir=new  File("C:/","Students");
+    dir.mkdir();
+    File f=new File(dir,"hello.txt");
+    if(content.length()>0)
+    {  writeContent(content,f);
+       String str=readContent(f);
+       out.print(f.getName()+"的内容:<br>"); 
+       out.print(str); 
+    } 
+%>
+</FONT></BODY></HTML>
+例子8
+example5_8.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import ="java.io.*" %>
+<HTML><BODY>
+ <P> 在下面的表格输入成绩：
+ <FORM action="" method=post name=form>
+  <Table align="CENTER" Border>
+     <TR>
+            <TH  width=50> 姓名</TH>
+            <TH  width=50> 数学</TH>
+            <TH  width=50>英语</TH>
+     </TR>
+    <% int i=0;
+       while(i<=6)
+         {  out.print("<TR>");
+              out.print("<TD>");
+                 out.print("<INPUT type=text name=name value=姓名>");
+              out.print("</TD>");
+              out.print("<TD>");
+                 out.print("<INPUT type=text name=math value=0>");
+              out.print("</TD>");
+              out.print("<TD>");
+                 out.print("<INPUT type=text name=english value=0>");
+              out.print("</TD>");
+           out.print("</TR>");
+          i++;
+        }
+     %>
+     <TR>
+        <TD>
+         <INPUT type=submit name="g" value="写入成绩" >
+        </TD>
+        <TD> Math</TD>
+        <TD> English</TD>
+     </TR>  
+   </Table>
+  </FORM>
+  <% String name[]=request.getParameterValues("name");
+     String math[]=request.getParameterValues("math");
+     String english[]=request.getParameterValues("english");
+    try{ 
+         File f=new File("f:/2000","student.txt");
+         FileOutputStream o=new FileOutputStream(f);
+         DataOutputStream DataOut=new DataOutputStream(o);
+         for(int k=0;k<name.length;k++)
+          { DataOut.writeUTF(name[k]);
+            DataOut.writeUTF(math[k]);
+            DataOut.writeUTF(english[k]);
+          }
+        DataOut.close();
+        o.close();
+      } 
+    catch(IOException e)
+      {}
+    catch(NullPointerException ee)
+      {}
+  %>
+ <P><BR>查看成绩单：
+  <A href=showresult.jsp><BR> 链接到成绩单页面>
+</BODY></HTML>
+ 
+showresult.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import ="java.io.*" %>
+<HTML><BODY>
+ <P>成绩单：
+ <%try{ File f=new File("f:/2000","student.txt");
+         FileInputStream in=new FileInputStream(f);
+         DataInputStream DataIn=new DataInputStream(in);
+         String name="ok";
+         String math="0",english="0";
+         out.print("<Table Border>");
+           out.print("<TR>");
+               out.print("<TH  width=50> 姓名</TH>");
+               out.print("<TH  width=50> 数学</TH>");
+               out.print("<TH  width=50>英语</TH>");
+           out.print("</TR>");
+           while((name=DataIn.readUTF())!=null)
+             { byte bb[]=name.getBytes("ISO-8859-1");
+               name=new String(bb);
+               math=DataIn.readUTF();
+               english=DataIn.readUTF();
+               out.print("<TR>");
+                  out.print("<TD width=200>");
+                  out.print(name);
+                  out.print("</TD>"); 
+                  out.print("<TD width=100>");
+                  out.print(math);
+                  out.print("</TD>"); 
+                  out.print("<TD width=100>");
+                  out.print(english);
+                  out.print("</TD>");
+               out.print("</TR>");  
+             }
+        out.print("</Table>");
+        DataIn.close();  in.close();
+     }
+    catch(IOException ee)
+     { }
+  %>
+</BODY></HTML>
+例子9
+example5_9.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import ="java.io.*" %>
+<%@ page import ="java.util.*" %>
+<HTML><BODY>
+ <P> 输入货物有关信息：
+  <FORM action="input.jsp" method=post >
+    <P>货号：
+      <INPUT type=text name="N">
+    <P>数量：
+      <INPUT type=text name="M">
+    <BR>
+      <INPUT type=submit value="提交">  
+  </FORM>
+ <Table Border=2>
+  <tr>
+   <td> 
+       <FORM action="showgoods.jsp" method=post>
+         <INPUT type=submit value="查看界面">  
+       </FORM>
+   </td>
+   <td> 
+       <FORM action="del.jsp" method=post >
+         <INPUT type=submit value="修改界面">  
+       </FORM>
+   </td>
+</BODY></HTML>
+ 
+input.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import ="java.io.*" %>
+<%@ page import ="java.util.*" %>
+<HTML><BODY> 
+  <%! Hashtable hashtable=new Hashtable();
+      synchronized void putGoodsToHashtable(String key,String list)
+        { hashtable.put(key,list);
+        }
+  %>
+ <%  String name=request.getParameter("N");
+     String mount=request.getParameter("M");
+     if(name==null||mount==null)
+       { name="";
+         mount="";
+       }
+     else
+       {   byte  c[]=name.getBytes("ISO-8859-1");
+           name=new String(c); 
+           byte  d[]=mount.getBytes("ISO-8859-1");
+           mount=new String(d);
+       }
+           
+   %>
+  <%   File f=new File("C:/","goods_name.txt");
+       if(f.exists())
+         {try{ FileInputStream in=new FileInputStream(f);
+                ObjectInputStream object_in=new ObjectInputStream(in);
+                hashtable=(Hashtable)object_in.readObject();
+                object_in.close();
+                in.close(); 
+                if(hashtable.containsKey(name))
+                 { session.setAttribute("name",name);
+                   response.sendRedirect("del.jsp");     //重定向到修改页面
+                 }
+                else
+                 { String s="#"+name+"#"+mount+"#";
+                   putGoodsToHashtable(name,s);      //向散列表填加新的货物信息
+                  try{ FileOutputStream o=new FileOutputStream(f);
+                       ObjectOutputStream object_out=new ObjectOutputStream(o);
+                       object_out.writeObject(hashtable);
+                       object_out.close();
+                       o.close();
+                     }
+                   catch(Exception eee){}
+                   out.print("<BR>"+"您已经将货物存入文件");
+                   out.print("<BR>"+"货物的货号："+name);
+                 }
+              }
+             catch(IOException e) {}
+         }    
+      else
+         { String s="#"+name+"#"+mount+"#";
+           putGoodsToHashtable(name,s);
+           try{ FileOutputStream o=new FileOutputStream(f);
+                ObjectOutputStream object_out=new ObjectOutputStream(o);
+                object_out.writeObject(hashtable);
+                object_out.close();
+                o.close();
+                out.print("<BR>"+"您是第一个录入货物的人");
+                out.print("<BR>"+"货物的货号："+name);
+               }
+           catch(Exception eee){}
+         }
+   %>
+<Table Border=2>
+  <tr>
+   <td> 
+       <FORM action="example5_9.jsp" method=post >
+         <INPUT type=submit value="录入界面">  
+       </FORM>
+   </td>
+   <td> 
+       <FORM action="showgoods.jsp" method=post >
+         <INPUT type=submit value="查看界面">  
+       </FORM>
+   </td>
+   <td> 
+       <FORM action="del.jsp" method=post >
+         <INPUT type=submit value="修改界面">  
+       </FORM>
+   </td>
+ </Table>
+</BODY></HTML>
+ 
+del.jsp:
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import ="java.io.*" %>
+<%@ page import ="java.util.*" %>
+<HTML><BODY> 
+  <%!Hashtable hashtable=new Hashtable();
+      synchronized void removeGoodsToHashtable(String key)
+        { hashtable.remove(key);
+        }
+      synchronized void putGoodsToHashtable(String key,String list)
+        { hashtable.put(key,list);
+        }
+  %>
+ <%
+   String name=null,delete="";
+   String oldname=(String)session.getAttribute("name");
+   out.print("<BR> 输入要删除货物的货号：");
+   out.print("<FORM action=del.jsp method=get") ;
+   out.print("<P>货号：");
+   out.print("<INPUT type=text name=N value="+oldname+">");
+   out.print(" <INPUT type=submit name=del value=del>");  
+   out.print("</FORM>");
+   name=request.getParameter("N");
+   delete=request.getParameter("del");
+   if(name==null)
+     { name="have no any goods number";
+     }
+   byte  c[]=name.getBytes("ISO-8859-1");
+   name=new String(c); 
+   if(delete!=null)
+     {if(delete.startsWith("del"))
+        {try{  File f=new File("C:/","goods_name.txt");
+                FileInputStream in=new FileInputStream(f);
+                ObjectInputStream object_in=new ObjectInputStream(in);
+                hashtable=(Hashtable)object_in.readObject();
+                object_in.close();
+                in.close(); 
+                if(hashtable.containsKey(name))
+                 { removeGoodsToHashtable(name);
+                   out.print("<BR>"+"货号："+name+"的信息被删除");
+                   FileOutputStream o=new FileOutputStream(f);
+                   ObjectOutputStream object_out=new ObjectOutputStream(o);
+                   object_out.writeObject(hashtable); 
+                   object_out.close();
+                   o.close();
+                 }
+                else
+                 { out.print("<BR>"+"没有货号："+name+"记录");
+                 }
+             }
+         catch(Exception ee){}
+        }
+     }
+  %>
+<Table Border=2>
+  <tr>
+   <td> 
+       <FORM action="example5_9.jsp" method=post >
+         <INPUT type=submit value="录入界面">  
+       </FORM>
+   </td>
+   <td> 
+       <FORM action="showgoods.jsp" method=post >
+         <INPUT type=submit value="查看界面">  
+       </FORM>
+   </td>
+   <td> 
+       <FORM action="del.jsp" method=post >
+         <INPUT type=submit value="修改界面">  
+       </FORM>
+   </td>
+ </Table>
+</BODY></HTML>
+ 
+showgoods.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import ="java.io.*" %>
+<%@ page import ="java.util.*" %>
+<HTML><BODY>
+  <P> 已有货物的有关信息：
+   <%try{ File f=new File("C:/","goods_name.txt");
+          FileInputStream in=new FileInputStream(f);
+          ObjectInputStream object_in=new ObjectInputStream(in);
+          Hashtable  hashtable=(Hashtable)object_in.readObject();
+          object_in.close();
+          in.close(); 
+          Enumeration en=hashtable.elements(); 
+          out.print("<table border=2>");
+           out.print("<tr>");
+           out.print("<td bagcolor=cyan>"+"货号"+"</td>");
+           out.print("<td bagcolor=cyan>"+"库存"+"</td>");
+           out.print("</tr>");
+           while(en.hasMoreElements())   //遍历当前散列表
+             {  out.print("<tr>");
+                String goods=(String)en.nextElement();
+                StringTokenizer fenxi=new StringTokenizer(goods,"#");
+                while(fenxi.hasMoreTokens()) 
+                { String str=fenxi.nextToken();
+                  out.print("<td bgcolor=cyan >"+str+"</td>");
+                }
+                out.print("</tr>");
+             }
+           out.print("</table>");
+           hashtable.clear();
+         }
+     catch(Exception event)
+         {out.println("无法读出");
+         }
+   %>
+<Table Border=2>
+  <tr>
+   <td> 
+       <FORM action="example5_9.jsp" method=post >
+         <INPUT type=submit value="录入界面">  
+       </FORM>
+   </td>
+   <td> 
+       <FORM action="showgoods.jsp" method=post >
+         <INPUT type=submit value="查看界面">  
+       </FORM>
+   </td>
+   <td> 
+       <FORM action="del.jsp" method=post >
+         <INPUT type=submit value="修改界面">  
+       </FORM>
+   </td>
+ </Table>
+</BODY></HTML>
+例子10
+example5_10.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import ="java.io.*" %>
+<HTML><BODY bgcolor=cyan><FONT size=2>
+<% String str=response.encodeURL("continueWrite.jsp");
+%>
+ <P>选择您想续写小说的名字：<BR>
+   <FORM action="<%=str%>" method=post name=form>
+     <BR><INPUT type="radio" name="R" value="spring.doc" >美丽的故事
+     <BR><INPUT type="radio" name="R" value="summer.doc" >火热的夏天   
+     <BR><INPUT type="radio" name="R" value="autumn.doc" >秋天的收获
+     <BR><INPUT type="radio" name="R" value="winter.doc" >冬天的大雪 
+    <BR>  <INPUT type=submit name ="g" value="提交">  
+</FORM>
+</FONT></BODY></HTML>
+ 
+continueWrite.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import ="java.io.*" %>
+<HTML><BODY bgcolor=cyan><FONT size=1>
+<P>小说已有内容：
+<Font size=1 Color=Navy>
+<% String str=response.encodeURL("continue.jsp");
+%>
+<%--获取客户提交的小说的名字--%>
+ <%
+   String name=(String)request.getParameter("R");
+              if(name==null)
+              {  name="";
+              }
+    byte  c[]=name.getBytes("ISO-8859-1");
+    name=new String(c); 
+    session.setAttribute("name",name);
+    File storyFileDir=new File("F:/8000","story");
+    storyFileDir.mkdir();
+    File f=new File(storyFileDir,name);  
+    //列出小说的内容
+     try{ RandomAccessFile file=
+          new RandomAccessFile(f,"r");
+          String temp=null;
+          while((temp=file.readUTF())!=null)
+             { byte  d[]=temp.getBytes("ISO-8859-1");
+               temp=new String(d); 
+               out.print("<BR>"+temp);
+              }
+          file.close();
+       }
+   catch(IOException e){}
+ %> 
+ </FONT>
+ <P>请输入续写的新内容：
+  <Form action="<%=str%>" method=post name=form>
+    <TEXTAREA name="messages" ROWs="12" COLS=80 WRAP="physical">
+    </TEXTAREA>
+    <BR>
+    <INPUT type="submit" value="提交信息" name="submit">
+  </FORM>
+  </BODY></HTML>
+continue.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page isThreadSafe="false" %>
+<%@ page import ="java.io.*" %>
+<HTML>
+<BODY> 
+  <%!String writeContent(File f,String s)
+       { try{  
+              RandomAccessFile out=new RandomAccessFile(f,"rw");
+               out.seek(out.length()); //定位到文件的末尾
+               out.writeUTF(s);
+               out.close();
+               return "内容已成功写入到文件";
+            }
+         catch(IOException e)
+            {  return "不能写入到文件";
+            }
+       }  
+  %>
+  <%--获取客户提交的小说的名字--%> 
+  <%   String name=(String)session.getAttribute("name");
+       byte  c[]=name.getBytes("ISO-8859-1");
+       name=new String(c); 
+       //获取客户续写的内容
+       String content=(String)request.getParameter("messages");
+                   if(content==null)
+                     { content="";
+                     }
+   %>
+  <%
+     File storyFileDir=new File("F:/8000","story");
+     storyFileDir.mkdir();
+     File f=new File(storyFileDir,name);
+     String message=writeContent(f,content);
+     out.print(message);
+   %>
+</BODY></HTML>
+例子11
+example5_11.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY>
+ <P>选择要上传的文件：<BR>
+   <FORM action="accept.jsp" method="post" ENCTYPE="multipart/form-data">
+      <INPUT type=FILE name="boy" size="38"> 
+      <BR><INPUT type="submit" name ="g" value="提交">  
+</FORM>
+</BODY></HTML>
+ 
+accept.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import ="java.io.*" %>
+<HTML><BODY>
+  <%try{  InputStream in=request.getInputStream();
+          File f=new File("C:/1000","B.txt");
+          FileOutputStream o=new FileOutputStream(f);
+          byte b[]=new byte[1000];
+          int n;
+          while((n=in.read(b))!=-1)
+          { o.write(b,0,n);
+          }
+          o.close();
+          in.close();
+       }
+    catch(IOException ee){}
+    out.print("文件已上传");
+  %> 
+</BODY></HTML>
+例子12
+example5_12.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import ="java.io.*" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="ok" %>
+<HTML><BODY>
+ <P>选择要上传的文件：<BR>
+ <FORM action="accept.jsp" method="post" ENCTYPE="multipart/form-data">
+      <INPUT type=FILE name="boy" size="45"> 
+      <BR> <INPUT type="submit" name ="boy" value="提交">
+ </FORM>
+</BODY></HTML>
+ 
+accept.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import ="java.io.*" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="ok" %>
+<HTML><BODY>
+<ok:UpFile subdir="image" />
+   <%=message%>
+   <br>上传的效果:
+   <image src="image/<%=fileName %>" width=160 height=100></image>
+</BODY></HTML>
+ 
+UpFile.tag
+ 
+<%@ tag pageEncoding="GB2312" %>
+<%@ tag import="java.io.*" %>
+<%@ attribute name="subdir" required="true" %> 
+<%@ variable name-given="message" scope="AT_END" %>
+<%@ variable name-given="fileName" scope="AT_END" %>
+<%  jspContext.setAttribute("message",""); 
+    String fileName=null;
+    try{  //用客户的session对象的Id建立一个临时文件
+          String tempFileName=(String)session.getId();
+          File dir=new File("D:/apache-tomcat-6.0.13/webapps/ch5/"+subdir);
+          dir.mkdir();          
+          //建立临时文件f1
+          File f1=new File(dir,tempFileName);
+          FileOutputStream o=new FileOutputStream(f1);
+           //将客户上传的全部信息存入f1
+          InputStream in=request.getInputStream();
+          byte b[]=new byte[10000];
+          int n;
+          while( (n=in.read(b))!=-1)
+          { o.write(b,0,n);
+          }
+          o.close();
+          in.close();
+           //读取临时文件f1，从中获取上传文件的名字和上传文件的内容
+          RandomAccessFile random=new RandomAccessFile(f1,"r");
+           //读出f1的第2行，析取出上传文件的名字
+          int second=1;
+          String secondLine=null;
+          while(second<=2)  
+           {  secondLine=random.readLine();
+              second++;
+           }
+           //获取第2行中目录符号'\'最后出现的位置
+           int position=secondLine.lastIndexOf('\\');
+           //客户上传的文件的名字是
+           fileName=secondLine.substring(position+1,secondLine.length()-1);
+           random.seek(0); //再定位到文件f1的开头
+           //获取第4行回车符号的位置
+           long  forthEndPosition=0;
+           int forth=1;
+           while((n=random.readByte())!=-1&&(forth<=4))  
+           {
+             if(n=='\n')
+              {
+                 forthEndPosition=random.getFilePointer();
+                 forth++;
+              }
+           }
+           //根据客户上传文件的名字，将该文件存入磁盘
+           byte  cc[]=fileName.getBytes("ISO-8859-1");
+           fileName=new String(cc);
+           File f2= new File(dir,fileName);
+           RandomAccessFile random2=new RandomAccessFile(f2,"rw"); 
+           //确定出文件f1中包含客户上传的文件的内容的最后位置，即倒数第6行
+           random.seek(random.length());
+           long endPosition=random.getFilePointer();
+           long mark=endPosition;
+           int j=1;
+           while((mark>=0)&&(j<=6))  
+           {   mark--;
+               random.seek(mark);
+               n=random.readByte();
+               if(n=='\n')
+                 {  endPosition=random.getFilePointer();
+                    j++;
+                 }
+           }
+         //将random流指向文件f1的第4行结束的位置
+         random.seek(forthEndPosition);
+         long startPoint=random.getFilePointer();
+          //从f1读出客户上传的文件存入f2（读取第4行结束位置和倒数第6行之间的内容）
+         while(startPoint<endPosition-1)
+          {   n=random.readByte();
+              random2.write(n); 
+              startPoint=random.getFilePointer();
+          }
+          random2.close();
+          random.close();
+          jspContext.setAttribute("message","上传成功"); //将message返回JSP页面
+          jspContext.setAttribute("fileName",fileName);//将fileName返回JSP页面 
+          f1.delete(); //删除临时文件
+       }
+     catch(Exception ee) 
+       { jspContext.setAttribute("message","没有选择文件或上传失败"); 
+       }
+%>
+例子13
+example5_13.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY>
+<P>单击超链接下载book.Zip
+ <BR>  <A href="loadFile.jsp">下载book.zip
+</BODY></HTML>    
+ 
+loadFile.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="java.io.*" %>
+<HTML><BODY>
+<%  File fileLoad=new File("c:/1000","book.zip");
+   //通知客户使用下载文件对话框
+ response.setHeader("Content-disposition","attachment;filename="+"book.zip"); 
+ %>
+</BODY></HTML>
+第6章  JSP中使用数据库
+例子1
+example6_1.jsp
+ 
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="java.sql.*" %>
+<HTML><BODY bgcolor=cyan>
+ <% Connection con;
+    Statement sql; 
+    ResultSet rs;
+    try{  Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
+       }
+    catch(ClassNotFoundException e)
+       {  out.print(e);
+       }
+    try { con=DriverManager.getConnection("jdbc:odbc:mystar","sa","sa");
+          sql=con.createStatement();
+          rs=sql.executeQuery("SELECT * FROM product WHERE price>5000");
+          out.print("<table border=2>");
+          out.print("<tr>");
+            out.print("<th width=100>"+"产品号");
+            out.print("<th width=100>"+"名称");
+            out.print("<th width=50>"+"生产日期");
+            out.print("<th width=50>"+"价格");
+         out.print("</TR>");
+       while(rs.next())
+       {  out.print("<tr>");
+             out.print("<td >"+rs.getString(1)+"</td>"); 
+             out.print("<td >"+rs.getString(2)+"</td>");
+             out.print("<td >"+rs.getDate("madeTime")+"</td>"); 
+             out.print("<td >"+rs.getFloat("price")+"</td>");
+          out.print("</tr>") ; 
+        }
+        out.print("</table>");
+        con.close();
+     }
+   catch(SQLException e) 
+     {  out.print(e);
+     }
+ %>
+</BODY></HTML>
+例子2
+example6_2.jsp
+ 
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="java.sql.*" %>
+<HTML><BODY bgcolor=yellow>
+ <% Connection con;
+    Statement sql; 
+    ResultSet rs;
+    try { Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        }
+    catch(Exception e)
+        { out.print(e);
+        }
+    try { String uri= "jdbc:sqlserver://127.0.0.1:1433;DatabaseName=Warehouse";
+          String user="sa";
+          String password="sa";
+          con=DriverManager.getConnection(uri,user,password);
+          sql=con.createStatement();
+          rs=sql.executeQuery("SELECT * FROM product WHERE price>5000");
+           out.print("<table border=2>");
+          out.print("<tr>");
+            out.print("<th width=100>"+"产品号");
+            out.print("<th width=100>"+"名称");
+            out.print("<th width=50>"+"生产日期");
+            out.print("<th width=50>"+"价格");
+         out.print("</TR>");
+       while(rs.next())
+       {  out.print("<tr>");
+             out.print("<td >"+rs.getString(1)+"</td>"); 
+             out.print("<td >"+rs.getString(2)+"</td>");
+             out.print("<td >"+rs.getDate("madeTime")+"</td>"); 
+             out.print("<td >"+rs.getFloat("price")+"</td>");
+          out.print("</tr>") ; 
+        }
+        out.print("</table>");
+        con.close();
+     }
+   catch(SQLException e) 
+     {  out.print(e);
+     }
+ %>
+</BODY></HTML>
+例子3
+example6_3.jsp
+ 
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="inquire"%>
+<HTML><Body bgcolor=cyan><Font size=2>
+<FORM action="inquire.jsp" Method="post" >
+   输入数据源名: <Input type=text name="dataSource" size=8>
+   输入表的名字: <Input type=text name="tableName"  size=8>  
+  <br>输入用户名：<Input type=text name="user" size=6>(默认是sa)
+   输入密码：  <Input type="password" name="password" size=6>(默认是sa)     
+  <br><Input type=submit name="g" value="提交">
+</Form>
+</Font></Body></HTML>
+inquire.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="inquire"%>
+<HTML><Body bgcolor=cyan><Font size=2>
+  <% String dSource=request.getParameter("dataSource");
+     String tName=request.getParameter("tableName");
+     String id=request.getParameter("user");
+     String secret=request.getParameter("password");
+  %>
+  <inquire:QueryTag dataSource="<%=dSource%>"tableName="<%=tName%>"
+  user="<%=id%>" password="<%=secret%>"/>
+   在<%=biao%>表查询到记录:
+   <BR> <%=queryResult %>
+</Font></Body></HTML>
+QueryTag.tag
+ 
+<%@ tag pageEncoding="GB2312" %>
+<%@ tag import="java.sql.*" %>
+<%@ attribute name="dataSource" required="true" %>
+<%@ attribute name="tableName" required="true" %> 
+<%@ attribute name="user" required="true" %>  
+<%@ attribute name="password" required="true" %>  
+<%@ variable name-given="biao" scope="AT_END" %>
+<%@ variable name-given="queryResult" scope="AT_END" %>
+<% 
+    StringBuffer result;     
+    result=new StringBuffer();
+    try{  Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
+       }
+    catch(Exception e) {} 
+    Connection con;
+    Statement sql; 
+    ResultSet rs;
+    try{  result.append("<table border=1>"); 
+          String uri="jdbc:odbc:"+dataSource;
+          con=DriverManager.getConnection(uri,user,password);
+          DatabaseMetaData metadata=con.getMetaData();
+          ResultSet rs1=metadata.getColumns(null,null,tableName,null);
+          int 字段个数=0;
+          result.append("<tr>");
+          while(rs1.next())
+           { 字段个数++;
+             String clumnName=rs1.getString(4);
+             result.append("<td>"+clumnName+"</td>");
+           }
+          result.append("</tr>");
+          sql=con.createStatement();
+          rs=sql.executeQuery("SELECT * FROM "+tableName);
+          while(rs.next())
+            {  result.append("<tr>");
+               for(int k=1;k<=字段个数;k++) 
+                {  result.append("<td>"+rs.getString(k)+"</td>");
+                }
+              result.append("</tr>");
+            }
+            result.append("</table>");
+            con.close();
+        }
+       catch(SQLException e)
+        {  result.append("请输入正确的用户名和密码");
+        }
+       jspContext.setAttribute("queryResult",new String(result));
+       jspContext.setAttribute("biao",tableName);
+%>
+例子4
+example6_4.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="inquire"%>
+<HTML><Body bgcolor=cyan><Font size=2>
+<P> 随机查询记录.
+<FORM action="random.jsp" Method="post" >
+   输入数据库名: <Input type=text name="databaseName" size=8>
+   输入表的名字: <Input type=text name="tableName"  size=8>  
+  <br>输入用户名：<Input type=text name="user" size=6>(默认是sa)
+   输入密码：  <Input type="password" name="password" size=6>(默认是sa)  
+  <br>输入查询的记录数：<Input type=text name="count" value=4>   
+  <Input type=submit name="g" value="提交">
+</Form>
+</Font></Body></HTML>
+ 
+random.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="inquire"%>
+<HTML><Body bgcolor=cyan><Font size=2>
+  <% String dName=request.getParameter("databaseName");
+     String tName=request.getParameter("tableName");
+     String id=request.getParameter("user");
+     String secret=request.getParameter("password");
+     String n=request.getParameter("count");
+  %>
+  <inquire:RandomQuery databaseName="<%=dName%>"tableName="<%=tName%>"
+                     user="<%=id%>" password="<%=secret%>" count="<%=n%>"/>
+   在<%=biao%>表随机查询到<%=randomCount%>条记录:
+   <BR> <%=queryResult %>
+</Font></Body></HTML>
+RandomQuery.tag
+ 
+<%@ tag pageEncoding="GB2312" %>
+<%@ tag import="java.sql.*" %>
+<%@ tag import="java.util.*" %>
+<%@ attribute name="databaseName" required="true" %>
+<%@ attribute name="tableName" required="true" %> 
+<%@ attribute name="user" required="true" %>  
+<%@ attribute name="password" required="true" %> 
+<%@ attribute name="count" required="true" %> 
+<%@ variable name-given="biao" scope="AT_END" %>
+<%@ variable name-given="queryResult" scope="AT_END" %>
+<%@ variable name-given="randomCount" scope="AT_END" %>
+<%  
+    Vector vector=new Vector();
+    StringBuffer result;
+    result=new StringBuffer();
+    try{   Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+       }
+    catch(Exception e) {} 
+    Connection con;
+    Statement sql; 
+    ResultSet rs;
+    int n=0;
+    try{  result.append("<table border=1>"); 
+          String uri= 
+"jdbc:sqlserver://127.0.0.1:1433;DatabaseName="+databaseName;
+          con=DriverManager.getConnection(uri,user,password);
+          DatabaseMetaData metadata=con.getMetaData();
+          ResultSet rs1=metadata.getColumns(null,null,tableName,null);
+          int 字段个数=0;
+          result.append("<tr>");
+          while(rs1.next())
+           { 字段个数++;
+             String clumnName=rs1.getString(4);
+             result.append("<td>"+clumnName+"</td>");
+           }
+          result.append("</tr>");
+          sql=con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                                    ResultSet.CONCUR_READ_ONLY);
+          rs=sql.executeQuery("SELECT * FROM "+tableName);
+          rs.last();
+          int rowNumber=rs.getRow();
+          int number=rowNumber;    //获取记录数
+          for(int i=1;i<=number;i++)
+          { vector.add(new Integer(i));
+          }
+          int m=Math.min(Integer.parseInt(count),number);
+          n=m;
+          while(m>0)
+          {  int i=(int)(Math.random()*vector.size());  
+//从vector中随机抽取一个元素：
+int index=((Integer)vector.elementAt(i)).intValue();
+              rs.absolute(index);                         //游标移到这一行
+              result.append("<tr>");
+              for(int k=1;k<=字段个数;k++) 
+              {  result.append("<td>"+rs.getString(k)+"</td>");
+              }
+              result.append("</tr>");
+              m--; 
+              vector.removeElementAt(i);   //将抽取过的元素从vector中删除
+           }
+           result.append("</table>");
+           con.close();
+ 
+        }
+       catch(SQLException e)
+        {  result.append("请输入正确的用户名和密码");
+        }
+       jspContext.setAttribute("queryResult",new String(result)); 
+       jspContext.setAttribute("biao",tableName); 
+       jspContext.setAttribute("randomCount",String.valueOf(n)); 
+%>
+例子5
+example6_5.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY><Font size=2>
+<FORM action="byNumber.jsp" Method="post">
+ 根据产品号查询
+<BR>输入产品号:<Input type=text name="number">
+<Input type=submit name="g" value="提交">
+</Form>
+<FORM action="byPrice.jsp" Method="post">
+  根据价格查询
+  <BR> 价格在<Input type=text name="priceMin" size=5>至
+        <Input type=text name="priceMax" size=5>之间
+         <Input type=submit  value="提交">
+</Form>
+</Font></BODY></HTML>
+byNumber.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="inquire"%>
+<HTML><BODY><Font size=2>
+<% String number=request.getParameter("number");
+%>
+ <inquire:NumberConditon number="<%=number%>" /> 
+ 根据产品号<%=number%>查询到的记录:
+<BR><%=queryResultByNumber%>
+</Font></BODY></HTML>
+byPrice.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="inquire"%>
+<HTML><BODY><Font size=2>
+<% String min=request.getParameter("priceMin");
+   String max=request.getParameter("priceMax");
+%>
+ <inquire:PriceConditon  priceMin="<%=min %>" priceMax="<%=max%>" />
+ 价格在<%=min%>至 <%=max%>之间的记录:
+ <BR><%=queryResultByPrice%>
+</Font></BODY></HTML>
+NumberCondition.tag
+ 
+<%@ tag pageEncoding="GB2312" %>
+<%@ tag import="java.sql.*" %>
+<%@ attribute name="number" required="true" %>
+<%@ variable name-given="queryResultByNumber" scope="AT_END" %>
+<%  StringBuffer result;
+    result=new StringBuffer();
+    try{   Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+       }
+    catch(Exception e) {} 
+    Connection con;
+    Statement sql; 
+    ResultSet rs;
+    int n=0;
+    try{  result.append("<table border=1>"); 
+          String uri= "jdbc:sqlserver://127.0.0.1:1433;DatabaseName=Warehouse";
+          con=DriverManager.getConnection(uri,"sa","sa");
+          DatabaseMetaData metadata=con.getMetaData();
+          ResultSet rs1=metadata.getColumns(null,null,"product",null);
+          int 字段个数=0;
+          result.append("<tr>");
+          while(rs1.next())
+           { 字段个数++;
+             String clumnName=rs1.getString(4);
+             result.append("<td>"+clumnName+"</td>");
+           }
+          result.append("</tr>");
+          sql=con.createStatement();
+          String condition="SELECT * FROM product Where number = '"+number+"'";
+          rs=sql.executeQuery(condition);
+          while(rs.next())
+          {  result.append("<tr>");
+             for(int k=1;k<=字段个数;k++) 
+             {  result.append("<td>"+rs.getString(k)+"</td>");
+             }
+             result.append("</tr>");
+           }
+          result.append("</table>");
+          con.close();
+        }
+       catch(SQLException e)
+        {  result.append(e);
+        }
+       jspContext.setAttribute("queryResultByNumber",new String(result)); 
+%> 
+PriceConditon.tag
+ 
+<%@ tag pageEncoding="GB2312" %>
+<%@ tag import="java.sql.*" %>
+<%@ attribute name="priceMax" required="true" %>
+<%@ attribute name="priceMin" required="true" %>
+<%@ variable name-given="queryResultByPrice" scope="AT_END" %>
+<%  float max=Float.parseFloat(priceMax);
+    float min=Float.parseFloat(priceMin);
+    StringBuffer result;
+    result=new StringBuffer();
+    try{   Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+       }
+    catch(Exception e) {} 
+    Connection con;
+    Statement sql; 
+    ResultSet rs;
+    int n=0;
+    try{  result.append("<table border=1>"); 
+          String uri= "jdbc:sqlserver://127.0.0.1:1433;DatabaseName=Warehouse";
+          con=DriverManager.getConnection(uri,"sa","sa");
+          DatabaseMetaData metadata=con.getMetaData();
+          ResultSet rs1=metadata.getColumns(null,null,"product",null);
+          int 字段个数=0;
+          result.append("<tr>");
+          while(rs1.next())
+           { 字段个数++;
+             String clumnName=rs1.getString(4);
+             result.append("<td>"+clumnName+"</td>");
+           }
+          result.append("</tr>");
+          sql=con.createStatement();
+          String condition="SELECT * FROM product Where price <= "+max
+                         +" AND "+"price >= "+min;
+          rs=sql.executeQuery(condition);
+          while(rs.next())
+          {  result.append("<tr>");
+             for(int k=1;k<=字段个数;k++) 
+             {  result.append("<td>"+rs.getString(k)+"</td>");
+             }
+             result.append("</tr>");
+           }
+          result.append("</table>");
+          con.close();
+        }
+       catch(SQLException e)
+        {  result.append(e);
+        }
+       jspContext.setAttribute("queryResultByPrice",new String(result)); 
+%> 
+例子6
+example6_6.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="inquire"%>
+<HTML><BODY><Font size=2>
+<FORM action="" method=post name=form>
+   排序记录：<INPUT type="radio" name="orderType" value="price">按价格(price)排序 
+   <INPUT type="radio" name="orderType" value="madeTime">按生产日期(madeTime)排序 
+   <Input type=submit name="g" value="提交">
+</Form>
+<% String orderType=request.getParameter("orderType");
+   if(orderType==null)
+   { orderType="";
+   }
+%>
+  <inquire:SortTag orderType="<%=orderType%>" /> 
+ 根据排序方式:<%=orderType%>,排序的记录:
+<BR> <%=orderResult%>
+</Font></BODY></HTML>
+SortTag.tag
+ 
+<%@ tag pageEncoding="GB2312" %>
+<%@ tag import="java.sql.*" %>
+<%@ attribute name="orderType" required="true" %>
+<%@ variable name-given="orderResult" scope="AT_END" %>
+<%  String orderCondition="SELECT * FROM product ORDER BY "+orderType;
+    StringBuffer result;
+    result=new StringBuffer();
+    try{   Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+       }
+    catch(Exception e) {} 
+    Connection con;
+    Statement sql; 
+    ResultSet rs;
+    int n=0;
+    try{  result.append("<table border=1>"); 
+          String uri= "jdbc:sqlserver://127.0.0.1:1433;DatabaseName=Warehouse";
+          con=DriverManager.getConnection(uri,"sa","sa");
+          DatabaseMetaData metadata=con.getMetaData();
+          ResultSet rs1=metadata.getColumns(null,null,"product",null);
+          int 字段个数=0;
+          result.append("<tr>");
+          while(rs1.next())
+           { 字段个数++;
+             String clumnName=rs1.getString(4);
+             result.append("<td>"+clumnName+"</td>");
+           }
+          result.append("</tr>");
+          sql=con.createStatement();
+          rs=sql.executeQuery(orderCondition);
+          while(rs.next())
+          {  result.append("<tr>");
+             for(int k=1;k<=字段个数;k++) 
+             {  result.append("<td>"+rs.getString(k)+"</td>");
+             }
+             result.append("</tr>");
+           }
+          result.append("</table>");
+          con.close();
+        }
+       catch(SQLException e)
+        {  result.append("");
+        }
+       jspContext.setAttribute("orderResult",new String(result)); 
+%> 
+例子7
+example6_7.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="inquire"%>
+<HTML><BODY><Font size=2>
+<FORM action="" method=post name=form>
+   选择:<Select name="ziduan">
+         <Option value="name">产品名称 
+         <Option value="number">产品号 
+    </Select>
+   含有:<INPUT type="text" name="keyWord" > 
+        <Input type=submit name="g" value="提交">
+</Form>
+<%  String ziduan=request.getParameter("ziduan");
+    String keyWord=request.getParameter("keyWord");
+    if(ziduan==null||keyWord==null)
+    { ziduan="";
+      keyWord="";
+    }
+   byte bb[]=keyWord.getBytes("iso-8859-1");
+   keyWord=new String(bb);
+%>
+ <inquire:KeyWord ziduan="<%=ziduan%>" keyWord="<%=keyWord%>"  /> 
+ 查询到的记录:
+<BR> <%=foundResult%>
+</Font></BODY></HTML>
+KeyWord.tag
+ 
+<%@ tag pageEncoding="GB2312" %>
+<%@ tag import="java.sql.*" %>
+<%@ attribute name="keyWord" required="true" %>
+<%@ attribute name="ziduan" required="true" %>
+<%@ variable name-given="foundResult" scope="AT_END" %>
+<%  String condition="SELECT * FROM product Where "+ziduan+
+" Like '%"+keyWord+"%'";
+    StringBuffer result;
+    result=new StringBuffer();
+    try{   Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+       }
+    catch(Exception e) {} 
+    Connection con;
+    Statement sql; 
+    ResultSet rs;
+    int n=0;
+    try{  result.append("<table border=1>"); 
+          String uri= "jdbc:sqlserver://127.0.0.1:1433;DatabaseName=Warehouse";
+          con=DriverManager.getConnection(uri,"sa","sa");
+          DatabaseMetaData metadata=con.getMetaData();
+          ResultSet rs1=metadata.getColumns(null,null,"product",null);
+          int 字段个数=0;
+          result.append("<tr>");
+          while(rs1.next())
+           { 字段个数++;
+             String clumnName=rs1.getString(4);
+             result.append("<td>"+clumnName+"</td>");
+           }
+          result.append("</tr>");
+          sql=con.createStatement();
+          rs=sql.executeQuery(condition);
+          while(rs.next())
+          {  result.append("<tr>");
+             for(int k=1;k<=字段个数;k++) 
+             {  result.append("<td>"+rs.getString(k)+"</td>");
+             }
+             result.append("</tr>");
+           }
+          result.append("</table>");
+          con.close();
+        }
+       catch(SQLException e)
+        {  result.append(""+e);
+        }
+       jspContext.setAttribute("foundResult",new String(result)); 
+%>
+例子8
+example6_8.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="inquire"%>
+<HTML><BODY bgcolor=pink ><FONT size=2>
+<FORM action="newResult.jsp" method=post>
+<table border=1>
+<tr><td> 输入要更新的产品的产品号：</td>
+<td><Input type="text" name="number"></td></tr>
+<tr><td>输入新的名称：</td><td><Input type="text" name="name"></td></tr>
+<tr><td>输入新的生产日期：</td><td><Input type="text" name="madeTime"></td></tr>
+<tr><td>输入新的价格：</td><td><Input type="text" name="price"></td></tr>
+</table>
+<BR><Input type="submit" name="b" value="提交更新">
+<BR>product表更新前的数据记录是：
+ <inquire:QueryTag dataSource="mystar"tableName="product"
+user="sa" password="sa"/> 
+<BR> <%=queryResult %>
+</Font></BODY></HTML>
+newResult.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="renew"%>
+<HTML><BODY bgcolor=cyan><Font size=2>
+<% String nu=request.getParameter("number");
+   String na=request.getParameter("name");
+   String mT=request.getParameter("madeTime");
+   String pr=request.getParameter("price");
+   byte bb[]=na.getBytes("iso-8859-1");
+   na=new String(bb);
+%>
+ <renew:NewRecord number="<%=nu%>" name="<%=na%>"
+madeTime="<%=mT%>" price="<%=pr%>"/> 
+ <BR>product表更新后的数据记录是：
+ <inquire:QueryTag dataSource="mystar"tableName="product"
+user="sa" password="sa"/> 
+<BR> <%=queryResult %>
+</Font></BODY></HTML>
+NewRecord.tag
+ 
+<%@ tag pageEncoding="GB2312" %>
+<%@ tag import="java.sql.*" %>
+<%@ attribute name="number" required="true" %>
+<%@ attribute name="name" required="true" %>
+<%@ attribute name="madeTime" required="true" %>
+<%@ attribute name="price" required="true" %>
+<%  float p=Float.parseFloat(price);
+ String condition1="UPDATE product SET name= '"+name+
+"' WHERE number="+"'"+number+"'" ,
+           condition2="UPDATE product SET madeTime= '"+madeTime+
+"' WHERE number="+"'"+number+"'",
+           condition3="UPDATE product SET price= "+price+
+" WHERE number="+"'"+number+"'" ;
+    try{   Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+       }
+    catch(Exception e) {} 
+    Connection con;
+    Statement sql; 
+    ResultSet rs;
+   try{ String uri="jdbc:sqlserver://127.0.0.1:1433;DatabaseName=Warehouse";
+         con=DriverManager.getConnection(uri,"sa","sa");
+         sql=con.createStatement();
+         sql.executeUpdate(condition1);
+         sql.executeUpdate(condition2);
+         sql.executeUpdate(condition3);
+         con.close();
+       }
+    catch(Exception e)
+      {  out.print(""+e);
+      }
+%> 
+例子9
+example6_9.jsp:
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="inquire"%>
+<HTML><BODY bgcolor=pink ><FONT size=2>
+<FORM action="newDatabase.jsp" method=post>
+添加新记录:
+<table border=1>
+<tr><td> 输入产品号：</td><td><Input type="text" name="number"></td></tr>
+<tr><td>输入名称：</td><td><Input type="text" name="name"></td></tr>
+<tr><td>输入生产日期：</td><td><Input type="text" name="madeTime"></td></tr>
+<tr><td>输入价格：</td><td><Input type="text" name="price"></td></tr>
+</table>
+<BR><Input type="submit" name="b" value="提交">
+<BR>product表添加新记录前的记录是：
+ <inquire:QueryTag dataSource="mystar"tableName="product"
+user="sa" password="sa"/> 
+<BR> <%=queryResult %>
+</Font></BODY></HTML>
+newDatabase.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="inquire"%>
+<HTML><BODY bgcolor=cyan><Font size=2>
+<% String nu=request.getParameter("number");
+   String na=request.getParameter("name");
+   String mT=request.getParameter("madeTime");
+   String pr=request.getParameter("price");
+   byte bb[]=na.getBytes("iso-8859-1");
+   na=new String(bb);
+%>
+ <inquire:AddRecord number="<%=nu%>" name="<%=na%>"
+madeTime="<%=mT%>" price="<%=pr%>"/> 
+ <BR>product表添加新记录后的记录是：
+ <inquire:QueryTag dataSource="mystar"tableName="product"
+ user="sa" password="sa"/> 
+<BR> <%=queryResult %>
+</Font></BODY></HTML>
+AddRecord.tag
+ 
+<%@ tag pageEncoding="GB2312" %>
+<%@ tag import="java.sql.*" %>
+<%@ attribute name="number" required="true" %>
+<%@ attribute name="name" required="true" %>
+<%@ attribute name="madeTime" required="true" %>
+<%@ attribute name="price" required="true" %>
+<%  float p=Float.parseFloat(price);
+    String condition=
+    "INSERT INTO product VALUES"+
+"("+"'"+number+"','"+name+"','"+madeTime+"',"+p+")";
+    try{   Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+       }
+    catch(Exception e) {} 
+    Connection con;
+    Statement sql; 
+    ResultSet rs;
+    try{ String uri= "jdbc:sqlserver://127.0.0.1:1433;DatabaseName=Warehouse";
+         con=DriverManager.getConnection(uri,"sa","sa");
+         sql=con.createStatement();
+         sql.executeUpdate(condition);
+         con.close();
+       }
+    catch(Exception e)
+      {  out.print(""+e);
+      }
+%> 
+例子10
+example6_10.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="inquire"%>
+<HTML><BODY bgcolor=pink ><FONT size=2>
+<FORM action="delete.jsp" method=post>
+删除记录：<br>输入被删除的记录的产品号：<Input type="text" name="number" size=8>
+<Input type="submit" name="b" value="提交">
+<BR>product表删除记录前的记录是：
+ <inquire:QueryTag dataSource="mystar"tableName="product"
+user="sa" password="sa"/> 
+<BR> <%=queryResult %>
+</Font></BODY></HTML>
+delete.jsp
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="inquire"%>
+<HTML><BODY bgcolor=cyan><Font size=2>
+<% String nu=request.getParameter("number");
+%>
+ <inquire:DelRecord number="<%=nu%>" /> 
+ <BR>product表删除记录后的记录是：
+ <inquire:QueryTag dataSource="mystar"tableName="product"
+user="sa" password="sa"/> 
+<BR> <%=queryResult %>
+</Font></BODY></HTML>
+DelRecord.tag
+<%@ tag pageEncoding="GB2312" %>
+<%@ tag import="java.sql.*" %>
+<%@ attribute name="number" required="true" %>
+<%  String condition="DELETE FROM product WHERE number = '"+number+"'";
+    try{   Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+       }
+    catch(Exception e) {} 
+    Connection con;
+    Statement sql; 
+    ResultSet rs;
+   try{  String uri= "jdbc:sqlserver://127.0.0.1:1433;DatabaseName=Warehouse";
+         con=DriverManager.getConnection(uri,"sa","sa");
+         sql=con.createStatement();
+         sql.executeUpdate(condition);
+         con.close();
+       }
+    catch(Exception e)
+      {  out.print(""+e);
+      }
+%>
+例子11
+example6_11.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="java.sql.*" %>
+<HTML><BODY>
+ <% Connection con=null;
+    Statement sql=null; 
+    ResultSet rs=null;
+    try{ Class.forName("oracle.jdbc.driver.OracleDriver"); 
+       }
+    catch(ClassNotFoundException e){}
+    try{ con=
+DriverManager.getConnection
+("jdbc:oracle:thin:@192.168.0.35:1521:Lea","scott","tiger");
+         sql=con.createStatement();
+         rs=sql.executeQuery("select * from emp");
+         out.print("<Table Border>");
+         out.print("<TR>");
+            out.print("<TH width=100>"+"EMPNO");
+            out.print("<TH width=50>"+"Ename");
+         out.print("</TR>");
+       while(rs.next())
+       {  out.print("<TR>");
+             int n=rs.getInt(1); 
+             out.print("<TD >"+n+"</TD>");
+             String e=rs.getString(2); 
+             out.print("<TD >"+e+"</TD>");
+         out.print("</TR>") ;  
+        }
+        out.print("</Table>");
+        con.close();
+     }
+   catch(SQLException e1) {out.print(""+e1);}
+ %>
+</BODY></HTML>
+例子12
+example6_12.jsp:
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="inquire"%>
+<HTML><Body bgcolor=cyan><Font size=2>
+  <inquire:QueryTag dataSource="redsun" tableName="chengjibiao"
+user="" password=""/>
+   在<%=biao%>表查询到记录: <BR> <%=queryResult %>
+</Font></Body></HTML>
+ 
+例子13
+example6_13.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="inquire"%>
+<HTML><Body bgcolor=cyan><Font size=2>
+ <inquire:QueryTag dataSource="star" tableName="mybiao" user="" password=""/>
+   在<%=biao%>表查询到记录: <BR> <%=queryResult %>
+</Font></Body></HTML>
+例子14
+vote.jsp（效果如图5-38所示）
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="java.sql.*" %>
+<HTML><BODY>
+ <%   StringBuffer nameList=new StringBuffer();
+      Connection con;
+      Statement sql; 
+      ResultSet rs;
+      try{ Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
+          }
+      catch(ClassNotFoundException e){}
+      try{
+          con=DriverManager.getConnection("jdbc:odbc:vote","","");
+          sql=con.createStatement();
+          rs=sql.executeQuery("SELECT * FROM people");
+          nameList.append("<FORM action=startvote.jsp  Method=post>");
+          nameList.append("<Table Border>");
+          nameList.append("<Table Border>");
+          nameList.append("<TR>");
+          nameList.append("<TH width=100>"+"姓名");
+          nameList.append("<TH width=50>"+"投票选择");
+          nameList.append("</TR>");
+          while(rs.next())
+             { nameList.append("<TR>");
+               String name=rs.getString(1);
+               nameList.append("<TD >"+name+"</TD>"); 
+               String s="<Input type=radio name=name value="+name+" >";
+               nameList.append("<TD >"+s+"</TD>");   
+               nameList.append("</TR>") ;          
+             }
+          nameList.append("</Table>");
+          nameList.append("<Input Type=submit value=提交>");
+         nameList.append("</FORM ");
+        con.close();
+        out.print(nameList);
+       }
+      catch(SQLException e1) {}
+%>
+</BODY></HTML>
+ 
+startvote.jsp
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="java.sql.*" %>
+<%@ page import="java.io.*" %>
+<HTML><BODY>
+ <%!  int total=0; //记录总票数的变量
+   synchronized void countTotal()
+        { total++; 
+        }   
+%>
+<% boolean vote=true;//决定用户是否有权投票的变量
+    String name="";
+    name=request.getParameter("name");   //得到被选择的候选人名字
+    if(name==null)
+       {   name="?";
+       }
+    byte a[]=name.getBytes("ISO-8859-1");
+    name =new String(a);
+    String IP=(String)request.getRemoteAddr();//得到投票人的IP地址
+    try{ Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
+        }
+    catch(ClassNotFoundException e){}
+    Connection con=null;
+    Statement sql=null;
+    ResultSet rs=null;
+   //首先查询IP表，判断该用户的IP地址是否已经投过票
+    try {con=DriverManager.getConnection("jdbc:odbc:vote","","");
+          sql=con.createStatement();
+          rs=sql.executeQuery("SELECT * FROM IP WHERE IP = "+"'"+IP+"'");
+          int row=0;
+          while(rs.next())
+          { row++;
+          }
+          if(row>=1)
+          {  vote=false;     //不允许投票
+          } 
+         }
+    catch(SQLException e){}
+if(name.equals("?")) 
+    { out.print("您没有投票,没有权利看选举结果");
+    }
+   else
+   { if(vote)
+     { out.print("您投了一票");
+       countTotal();//将总票数加1
+        //通过连接数据库，给该候选人增加一票,同时将投票人的IP地址写入数据库 
+       try
+         { rs=sql.executeQuery("SELECT * FROM people WHERE name = "+"'"+name+"'");
+           rs.next();
+           int count=rs.getInt("count");
+           count++; 
+           String condition=
+              "UPDATE people SET count = "+count+" WHERE name="+"'"+name+"'" ;
+          sql.executeUpdate(condition); //执行更新操作(投票计数)
+          String to="INSERT INTO IP VALUES"+"("+"'"+IP+"'"+")";
+          sql.executeUpdate(to);  //将IP地址写入IP表
+         }
+       catch(SQLException e)
+         { out.print(""+e);
+         }
+      //显示投票后的表中的记录       
+try{  rs=sql.executeQuery("SELECT * FROM people");
+              out.print("<Table Border>");
+              out.print("<TR>");
+              out.print("<TH width=100>"+"姓名");
+              out.print("<TH width=50>"+"得票数"); 
+              out.print("<TH width=50>"+"总票数:"+total); 
+             out.print("</TR>");
+             while(rs.next())
+             {  out.print("<TR>");
+                out.print("<TD >"+rs.getString(1)+"</TD>");
+                int count=rs.getInt("count");
+                out.print("<TD >"+count+"</TD>");
+                double b=(count*100)/total;  //得票的百分比。
+                out.print("<TD >"+b+"%"+"</TD>");
+                out.print("</TR>") ;  
+             }
+             out.print("</Table>");
+            con.close();
+         }
+     catch(SQLException e){ }
+   }
+  else
+   { out.print("您已经投过票了");
+   }
+ }
+%>
+</BODY> </HTML>
+第7章  JSP与JavaBean
+example7_1.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="tom.jiafei.*"%>
+<HTML><BODY bgcolor=cyan><Font size=3>
+   <jsp:useBean id="girl" class="tom.jiafei.Circle" scope="page" >
+   </jsp:useBean>
+  <%--通过上述JSP标记，用户获得了一个作用域是page，名字是girl的bean --%>
+   <% girl.setRadius(100);
+   %>
+    圆的半径是：<%=girl.getRadius()%>
+<br>圆的周长是：<%=girl.circlLength()%>
+<br>圆的面积是：<%=girl.circleArea()%>
+</BODY></HTML>
+Circle.java
+package tom.jiafei;
+public class Circle  
+{ int radius;
+   public Circle()
+     {  radius=1;
+     }
+  public int getRadius()
+     {  return radius;
+     }
+  public void setRadius(int newRadius)
+     {  radius=newRadius;
+     }
+  public double circleArea()
+     {  return Math.PI*radius*radius;
+     }
+  public double circlLength()
+     {  return 2.0*Math.PI*radius;
+     }
+}
+例子2
+ 
+bean1.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="tom.jiafei.*"%>
+<HTML>
+<BODY bgcolor=cyan><Font size=1>
+   <jsp:useBean id="girl" class="tom.jiafei.Circle" scope="session" >
+   </jsp:useBean>
+<P>圆的半径是：
+  <%=girl.getRadius()%>
+ <A href="bean2.jsp"><BR>bean2.jsp </A>
+</BODY>
+</HTML>
+bean2.jsp
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="tom.jiafei.*"%>
+<HTML>
+<BODY bgcolor=cyan><Font size=1>
+ <jsp:useBean id="girl" class="tom.jiafei.Circle" scope="session" >
+   </jsp:useBean>
+<P>圆的半径是：
+   <%=girl.getRadius()%>
+  <%girl.setRadius(400);%>
+<P>修改后的圆的半径是：
+   <%=girl.getRadius()%>
+</BODY>
+</HTML>
+例子3
+example7_3.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="tom.jiafei.*"%>
+ <jsp:useBean id="girl" class="tom.jiafei.Circle" scope="application"/>
+<HTML><BODY>
+   圆的半径是：<%=girl.getRadius()%>
+  <%girl.setRadius(1000);%>
+  <br>修改后的圆的半径是：<%=girl.getRadius()%>
+</BODY></HTML>
+例子4
+Circle2.java：
+ 
+package tom.jiafei;
+public class Circle2  
+{ double radius=1;
+  double circleArea=0;
+  double circleLength=0;
+  public double getRadius()
+  {  return radius;
+  }
+  public void setRadius(double newRadius)
+  {  radius=newRadius;
+  }
+  public double getCircleArea()
+  {  circleArea=Math.PI*radius*radius;
+     return circleArea;
+  }
+  public double getCircleLength()
+  {  circleLength=2.0*Math.PI*radius;
+     return circleLength;
+  }
+}
+example7_4.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="tom.jiafei.Circle2"%>
+<HTML><BODY bgcolor=cyan><FONT size=4>
+   <jsp:useBean id="apple" class="tom.jiafei.Circle2" scope="page" />
+    圆的半径是：<jsp:getProperty  name= "apple"  property= "radius"  />
+<br>圆的面积是：<jsp:getProperty name= "apple"  property= "circleArea" />
+<br>圆的周长是： <jsp:getProperty name= "apple"  property= "circleLength" />
+</FONT></BODY></HTML>
+例子5
+Student.java：
+ 
+package tom.jiafei;
+public class Student
+{ String name=null;
+  long number;
+  double height,weight;
+  public String getName()
+  { return name;
+  }
+  public void setName(String newName)
+  {  name=newName;
+  }
+  public long getNumber()
+  { return number;
+  }
+  public void setNumber(long newNumber)
+  { number=newNumber;
+  }
+  public double getHeight()
+  { return height;
+  }
+  public void setHeight(double newHeight)
+  { height=newHeight;
+  }
+  public double getWeight()
+  { return weight;
+  }
+  public void setWeight(double newWeight)
+  { weight=newWeight;
+  }
+}
+ 
+example7_5.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="tom.jiafei.Student"%>
+<jsp:useBean id="zhang" class="tom.jiafei.Student" scope="page"/>
+<HTML><BODY bgcolor=cyan><FONT size=4>
+<jsp:setProperty name="zhang" property="name" value="张小三"/>
+    名字是：<jsp:getProperty name="zhang" property="name"  />
+<jsp:setProperty name="zhang" property="number" value="1999001"/>
+<br>学号是：<jsp:getProperty name="zhang" property="number"/>
+<jsp:setProperty name="zhang" property="height" value="<%=1.78%>"/>
+<br>身高是：<jsp:getProperty name="zhang" property="height"/>米
+<jsp:setProperty name= "zhang" property="weight" value="67.65"/>
+<br>体重是：<jsp:getProperty name="zhang" property="weight"/>公斤
+</FONT></BODY></HTML>
+例子6
+example7_6.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="tom.jiafei.Student"%>
+<jsp:useBean id="zhang" class="tom.jiafei.Student" scope="page"/>
+<HTML><BODY ><FONT size=2>
+<FORM action="" Method="post">
+    输入姓名:<Input type=text name="name">
+<br>输入学号: <Input type=text name="number">
+<br>输入身高: <Input type=text name="height">
+<br>输入体重:<Input type=text name="weight">
+    <Input type=submit value="提交">
+</FORM>
+<jsp:setProperty name="zhang" property="*"/>
+    名字是：<jsp:getProperty name="zhang" property="name"/>
+<br>学号是：<jsp:getProperty name="zhang" property="number"/>
+<br>身高是：<jsp:getProperty name="zhang" property="height" />米
+<br>体重是：<jsp:getProperty name="zhang" property="weight" />公斤
+</FONT></BODY></HTML>
+例子7
+ListFile.java
+ 
+package tom.jiafei;
+import java.io.*;
+class FileName implements FilenameFilter 
+{  String str=null;
+   FileName (String s)
+   { str="."+s;
+   }
+   public  boolean accept(File dir,String name)
+   { return name.endsWith(str);
+   }              
+}
+public class ListFile
+{  String extendsName=null;
+   StringBuffer str=new StringBuffer(); 
+   public void setExtendsName(String s)
+   { extendsName=s;
+   }
+   public String getExtendsName()
+   { return extendsName;
+   }
+  public String getAllFileName()
+  {  File dir=new File("D:/apache-tomcat-6.0.13/webapps/ch7");
+     FileName help=new FileName(extendsName);
+     String file_name[]=dir.list(help);
+     for(int i=0;i<file_name.length;i++)
+     {  str.append(file_name[i]+" ");
+     }
+     return new String(str);
+  }  
+}
+ 
+ 
+example7_5.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="tom.jiafei.ListFile" %>
+<jsp:useBean id="file" class="tom.jiafei.ListFile" scope="page"/>
+<HTML><BODY ><FONT size=2>
+<FORM action="" Method="post" >
+  输入文件的扩展名:<Input type=text name="extendsName">
+ <Input type=submit value="提交">
+</FORM>
+ <jsp:setProperty name="file" property="*"/>
+ 当前JSP页面所在目录中，扩展名是：
+<jsp:getProperty name="file" property="extendsName"/>
+ 的文件有：
+ <br><jsp:getProperty name="file" property="allFileName"/>  
+</FONT></BODY></HTML>
+7.4.1  三角形bean
+1 / 三角形bean
+Triangle.java
+package tom.jiafei;
+public class Triangle
+{ double sideA,sideB,sideC;
+  double area;
+  boolean triangle;
+  public void setSideA(double a)
+   { sideA=a;
+   }
+  public double getSideA()
+   {  return sideA;
+   }
+  public void setSideB(double b)
+   {  sideB=b;
+   }
+  public double getSideB()
+   {  return sideB;
+   }
+  public void setSideC(double c)
+   {  sideC=c;
+   }
+  public double getSideC()
+   { return sideC;
+   }
+  public double getArea()
+   { double p=(sideA+sideB+sideC)/2.0;
+     area=Math.sqrt(p*(p-sideA)*(p-sideB)*(p-sideC));
+     return area;
+   }
+  public boolean isTriangle()
+   {  if(sideA<sideB+sideC&&sideB<sideA+sideC&&sideC<sideA+sideB)
+         triangle=true;
+      else
+         triangle=false;
+      return triangle;
+   }
+}
+2 / JSP页面
+triangle.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="tom.jiafei.Triangle"%>
+<jsp:useBean id="triangle" class="tom.jiafei.Triangle" scope="page"/>
+<HTML><BODY ><FONT size=2>
+<FORM action="" Method="post">
+<P>输入三角形的边A:<Input type=text name="sideA" value=0>
+<P>输入三角形的边B:<Input type=text name="sideB" value=0>
+<P>输入三角形的边C:<Input type=text name="sideC" value=0>
+<Input type=submit value="提交">
+<P>你给出三角形的三边是：
+<jsp:setProperty  name= "triangle"  property="*"  />
+<BR>边A是：<jsp:getProperty name="triangle" property="sideA"/>
+<BR>边B是：<jsp:getProperty name="triangle" property="sideB"/>
+<BR>边C是：<jsp:getProperty  name= "triangle"  property="sideC"/>
+<P>这三个边能构成一个三角形吗？
+<jsp:getProperty name="triangle" property="triangle"/>
+<P>面积是：<jsp:getProperty name="triangle" property="area"/>
+</FONT></BODY></HTML>
+7.4.2  猜数字bean
+ 
+1 / 猜数字bean
+GuessNumber.java
+package tom.jiafei;
+public class GuessNumber
+{  int answer=0,    //待猜测的整数
+   guessNumber=0,   //用户的猜测
+   guessCount=0;    //用户猜测的次数
+   String result=null; 
+   boolean right=false;
+   public void setAnswer(int n)
+   {  answer=n;
+      guessCount=0;
+   }
+  public int  getAnswer()
+   {  return answer;
+   }
+  public void  setGuessNumber(int n)
+   { guessNumber=n;
+     guessCount++;
+     if(guessNumber==answer)
+     {  result="恭喜，猜对了";
+        right=true;
+     }
+     else if(guessNumber>answer)
+     {  result="猜大了";
+        right=false;  
+     }
+     else if(guessNumber<answer)
+     {  result="猜小了";
+        right=false; 
+     }   
+   }
+  public int getGuessNumber()
+   {  return guessNumber;
+   }
+  public int getGuessCount()
+   {  return guessCount;
+   }
+  public String getResult()
+   {  return result;
+   }
+  public boolean isRight()
+   {  return right;
+   }
+ }
+2 / JSP页面
+ 
+getNumber.jsp
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="tom.jiafei.GuessNumber" %> 
+<jsp:useBean id="guess" class="tom.jiafei.GuessNumber" scope="session"/>
+<HTML><BODY bgcolor=cyan><FONT size=2>
+<% int n=(int)(Math.random()*100)+1;
+   String str=response.encodeRedirectURL("guess.jsp");
+%>
+<jsp:setProperty  name= "guess"  property="answer" value="<%=n%>"/>
+  随机给你一个1到100之间的数，请猜测这个数是多少？
+<Form action="<%=str%>" method=post >
+  输入你的猜测: <Input type=text name="guessNumber">
+<Input type=submit value="提交">
+</FONT></FORM></BODY></HTML>
+guess.jsp
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="tom.jiafei.GuessNumber" %>
+<jsp:useBean id="guess" class="tom.jiafei.GuessNumber" scope="session" />
+<% String strGuess=response.encodeRedirectURL("guess.jsp"),
+          strGetNumber=response.encodeRedirectURL("getNumber.jsp");
+%> 
+<HTML><BODY>
+<jsp:setProperty name="guess" property="guessNumber" param="guessNumber"/>
+   这是第<jsp:getProperty name="guess" property="guessCount" />猜，       <jsp:getProperty name="guess" property="result"/>。
+   您给出的数是 <jsp:getProperty name="guess" property="guessNumber"/>。
+<% if(guess.isRight()==false)
+   {
+%>   <FORM action="<%=strGuess%>" method=post >
+      再输入你的猜测:<Input type=text name="guessNumber">
+      <Input type=submit value="提交">
+     </FORM>
+<% }
+%>
+<BR><A href="<%=strGetNumber%>">链接到getNumber.jsp重新玩猜数。</A>
+</BODY></HTML>
+7.4.3  日历bean
+1/ 日历bean
+CalendarBean.java
+package tom.jiafei;
+import java.util.*;
+public class 
+{ String  calendar=null;
+  int year=2005,month=0;
+  public void setYear(int year)
+  { this.year=year;
+  }
+  public int getYear()
+  { return year; 
+  }
+  public void setMonth(int month)
+  { this.month=month;
+  }
+  public int getMonth()
+  { return month; 
+  }
+  public String getCalendar()
+  {  StringBuffer buffer=new StringBuffer(); 
+     Calendar 日历=Calendar.getInstance();
+     日历.set(year,month-1,1);//将日历翻到year年month月1日,注意0表示一月
+     //依次类推,11表示12月
+     //获取1日是星期几(get方法返回的值是1表示星期日,返回的值是7表示星期六)
+      int 星期几=日历.get(Calendar.DAY_OF_WEEK)-1;
+      int day=0;
+     if(month==1||month==3||month==5||month==7||
+month==8||month==10||month==12)
+      { day=31;
+      }
+     if(month==4||month==6||month==9||month==11)
+      { day=30;
+      }
+     if(month==2)
+      { if(((year%4==0)&&(year%100!=0))||(year%400==0))
+        { day=29;
+        }
+       else
+        { day=28;
+        }
+      }
+      String a[]=new String[42];    //存放号码的一维数组
+      for(int i=0;i<星期几;i++)
+      { a[i]="**";
+      }
+      for(int i=星期几,n=1;i<星期几+day;i++)
+      { if(n<=9)
+         a[i]=String.valueOf(n)+" ";
+        else
+         a[i]=String.valueOf(n) ;
+        n++;
+      }
+     //用表格显示数组
+     buffer.append("<table border=3>");
+     buffer.append("<tr>")  ;
+     String xingqi[]=
+     {"星期日","星期一","星期二","星期三","星期四","星期五","星期六"};
+     for(int k=0;k<7;k++)
+      { buffer.append("<td>"+xingqi[k]+"</td>");
+      }
+      buffer.append("</tr>") ;
+      for(int k=0;k<42;k=k+7)
+      { buffer.append("<tr>")  ;      //换行
+        for(int j=k;j<7+k;j++)
+        { buffer.append("<td>"+a[j]+"</td>");
+        }
+        buffer.append("</tr>") ;  
+      }
+      buffer.append("</table");
+      calendar=new String(buffer);
+      return calendar;
+   }
+}
+2/ JSP页面
+ 
+ 
+showcalendar.jsp
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="tom.jiafei.CalendarBean" %> 
+<HTML><BODY bgcolor=cyan><FONT size=4>
+ <jsp:useBean id="rili" class="tom.jiafei.CalendarBean" scope="request"/>
+  <FORM action="" method=post name=form>
+   选择日历的年份:
+  <Select name="year">
+          <Option value="2008">2008年
+          <Option value="2009">2009年
+          <Option value="2010">2010年
+          <Option value="2011">2011年
+   </Select>
+   选择日历的月份:
+          <Select name="month">
+          <Option value="1">1月
+          <Option value="2">2月
+          <Option value="3">3月
+          <Option value="4">4月
+          <Option value="5">5月
+          <Option value="6">6月
+          <Option value="7">7月
+          <Option value="8">8月
+          <Option value="9">9月
+          <Option value="10">10月
+          <Option value="11">11月
+          <Option value="12">12月
+          </Select>
+          <BR><BR>
+          <INPUT TYPE="submit" value="提交你的选择" name="submit">
+          </FORM>
+          <jsp:setProperty  name="rili" property="*"/>
+  <FONT color="red"><jsp:getProperty name="rili" property="year"/></FONT>年
+  <FONT color="blue"><jsp:getProperty name="rili" property="month"/></FONT>月
+  的日历:
+  <jsp:getProperty  name= "rili"  property="calendar" /> 
+</FONT></BODY></HTML>
+7.4.4  四则运算bean
+1/ 四则运算bean
+ComputerBean.java 
+package tom.jiafei;
+public class ComputerBean 
+ {  double numberOne,numberTwo,result;
+    String operator="+";
+   public void setNumberOne(double n)
+   {  numberOne=n;
+   }
+   public double getNumberOne()
+   {  return numberOne; 
+   }
+   public void setNumberTwo(double n)
+   {  numberTwo=n;
+   }
+   public double getNumberTwo()
+   {  return numberTwo; 
+   }
+   public void setOperator(String s)
+   {  operator=s.trim();;
+   }
+   public String getOperator()
+   {  return operator;
+   }
+   public double getResult()
+   {  if(operator.equals("+"))
+       {  result=numberOne+numberTwo;
+       } 
+      else if(operator.equals("-"))
+       {  result=numberOne-numberTwo;
+       }
+      else if(operator.equals("*"))
+       {  result=numberOne*numberTwo;
+       }
+      else if(operator.equals("/"))
+       {  result=numberOne/numberTwo;
+       }
+      return result; 
+   }
+}
+2/ JSP页面
+ 
+ 
+computer.jsp
+<%@ page contentType="text/html;Charset=GB2312" %>
+<%@ page import="tom.jiafei.*" %> 
+ <jsp:useBean id="computer" class="tom.jiafei.ComputerBean" scope="session"/>
+<HTML><BODY bgcolor=yellow><Font size=2>
+  <jsp:setProperty name="computer" property="*"/>
+  <FORM action="" method=post name=form>
+    <Input type=text name="numberOne"
+           value=<jsp:getProperty name="computer" property="numberOne"/> size=6>
+          <Select name="operator">
+           <Option value="+">+
+           <Option value="-">-
+           <Option value="*">*
+           <Option value="/">/
+          </Select> 
+    <Input type=text name="numberTwo"
+           value=<jsp:getProperty name="computer" property="numberTwo"/> size=6>
+     =<jsp:getProperty name="computer" property="result"/> 
+    <BR> <INPUT TYPE="submit" value="提交你的选择" name="submit">
+  </FORM> 
+</BODY></HTML>
+7.4.5  浏览图片bean
+ 
+ 
+ 
+1/ 浏览图片bean
+Play.java 
+package tom.jiafei;
+import java.io.*;
+class FileName implements FilenameFilter 
+{  public  boolean accept(File dir,String name)
+   {  boolean boo=false;
+      if(name.endsWith(".jpg")||name.endsWith(".JPG"))
+         boo=true;
+      return boo;
+   }              
+}
+public class Play
+{ int imageNumber=0,max;
+  String pictureName[],playImage;
+  public Play()
+   {  File dir=new File("D:/apache-tomcat-6.0.13/webapps/ch7/image");
+      pictureName=dir.list(new FileName());
+      max=pictureName.length;
+   }
+  public void setImageNumber(int n)
+  {  if(n<0)
+       n=max-1;
+     if(n==max)
+       n=0; 
+     imageNumber=n;
+  }
+  public int getImageNumber()
+  {  return imageNumber;
+  }
+  public String getPlayImage()
+  {  playImage=new String("<image src=image/"+pictureName[imageNumber]+" "+
+             " width=200 height=200></image>");
+      return playImage; 
+  } 
+}
+2/ JSP页面
+ 
+ 
+showPic.jsp
+<%@ page contentType="text/html;Charset=GB2312" %>
+<%@ page import="tom.jiafei.*"%>
+<jsp:useBean id="pl" class="tom.jiafei.Play" scope="session"/>
+<jsp:setProperty  name="pl" property="imageNumber" param="imageNumber"/>
+<jsp:getProperty  name="pl" property="playImage"/>  
+<HTML><BODY bgcolor=cyan><Font size=2>
+ <Table ><FORM action="" method=post>
+  <tr>
+  <td><Input type=submit name="ok" value="上一张"></td>
+   <Input type="hidden" name="imageNumber" value="<%=pl.getImageNumber()-1%>">
+   </FORM>
+   <FORM action="" method=post>
+   <td><Input type=submit name="ok" value="下一张"></td>
+   <Input type="hidden" name="imageNumber" value="<%=pl.getImageNumber()+1%>">
+   </tr>
+   </FORM>
+  </Table>
+</Font></BODY></HTML>
+ 
+7.5.1  读文件bean
+1 / 读文件bean
+ReadFile.java
+package tom.jiafei;
+import java.io.*;
+public class ReadFile
+{ String fileDir="c:/",fileName="";
+  String listFile,readContent;  
+   public void setFileDir(String s)
+   {   fileDir=s;
+   }
+  public String getFileDir()
+   {   return fileDir;
+   }
+  public void setFileName(String s) 
+   {   fileName=s;
+   }
+  public String getFileName()
+   {   return fileName;
+   }
+  public String getListFile()       
+  {  File dir=new File(fileDir);
+     File file_name[]=dir.listFiles();
+     StringBuffer list=new  StringBuffer();
+     for(int i=0;i<file_name.length;i++)
+      { if ((file_name[i]!=null)&&(file_name[i].isFile()))
+          { String temp=file_name[i].toString();
+            int n=temp.lastIndexOf("\\");
+            temp=temp.substring(n+1);
+            list.append(" "+temp); 
+          }
+      }
+     listFile=new String(list);
+     return listFile;
+  }  
+  public String getReadContent()   //读取文件
+   { try{  File file=new File(fileDir,fileName);
+           FileReader in=new FileReader(file) ;
+           BufferedReader inTwo=new BufferedReader(in);
+           StringBuffer stringbuffer=new StringBuffer(); 
+           String s=null;
+           while ((s=inTwo.readLine())!=null) 
+            {  byte bb[]=s.getBytes();
+               s=new String(bb);
+               stringbuffer.append("\n"+s);
+            }
+           String temp=new String(stringbuffer);
+           readContent="<TextArea rows=10 cols=62>"+temp+"</TextArea>";
+        }
+     catch(IOException e)
+       {  readContent="<TextArea rows=8 cols=62></TextArea>"; 
+          
+       } 
+     return readContent;
+   }
+}
+2 / JSP页面
+select.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY bgcolor=yellow><Font size=2>
+<P>选择一个目录：
+ <FORM action="read.jsp" method=post>
+     <Select name="fileDir" >
+        <Option value="D:/1000"> D:/1000
+        <Option value="D:/apache-tomcat-6.0.13/webapps/ch6">Web服务目录ch6
+        <Option value="D:/apache-tomcat-6.0.13/webapps/ch7">Web服务目录ch7
+     </Select>   
+<Input type=submit value="提交">
+</FORM>
+</FONT></BODY></HTML>
+read.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="tom.jiafei.ReadFile" %> 
+<HTML><BODY bgcolor=cyan><Font size=2>
+<jsp:useBean id="file" class="tom.jiafei.ReadFile" scope="session"/>
+<jsp:setProperty name="file" property="fileDir" param="fileDir"/>
+<P>该目录 <jsp:getProperty name="file" property="fileDir"/>
+   有如下文件:<BR> 
+  <jsp:getProperty name="file" property="listFile"/>
+<FORM action="" method=post name=form1>
+  输入一个文件名字：<input type=text name="fileName">  
+  <Input type=submit value="提交">
+</FORM>
+  <jsp:setProperty name="file" property="fileName" param="fileName"/>
+    文件:<jsp:getProperty name="file" property="fileName"/>
+    内容如下：<BR>
+  <jsp:getProperty name="file" property="readContent"/> 
+<BR>   
+  <A href="selectDir.jsp">重新选择目录</A>
+</Body></HTML></HTML>
+7.5.1  写文件bean
+WriteFile.java
+package tom.jiafei;
+import java.io.*;
+public class WriterFile
+{ String  filePath=null,
+          fileName=null,
+          fileContent=null;
+  boolean success;
+  public void setFilePath(String s)
+   {  filePath=s;
+      try{  File path=new File(filePath);
+            path.mkdir();
+         }
+      catch(Exception e){}   
+   }
+  public String getFilePath()
+   {  return filePath;
+   }
+  public void setFileName(String s)
+   {  fileName=s;
+   }
+  public String getFileName()
+   {  return fileName;
+   }
+  public void setFileContent(String s)
+   { fileContent=s;
+     byte content[]=fileContent.getBytes();
+     try{ File file=new File(filePath,fileName);
+          FileOutputStream in=new FileOutputStream(file) ;
+          in.write(content,0,content.length);
+          in.close();
+          success=true;
+       }
+    catch(Exception e)
+      {  success=false;
+      }   
+   }
+  public boolean isSuccess()
+   {  return success;
+   }
+}
+ 
+2 / JSP页面
+write.jsp
+ 
+<%@ page contentType="text/html;Charset=GB2312" %>
+<%@ page import="tom.jiafei.WriterFile" %> 
+<jsp:useBean id="ok" class="tom.jiafei.WriterFile" scope="page" />
+<jsp:setProperty name="ok" property="filePath" param="filePath" />
+<jsp:setProperty name="ok" property="fileName" param="fileName" />
+<jsp:setProperty name="ok" property="fileContent" param="fileContent" />
+<HTML><BODY bgcolor=cyan><Font size=2>
+ <FORM action="" method=post>
+   请选择一个目录：<Select name="filePath" >
+                     <Option value="C:/1000">C:/1000
+                     <Option value="D:/2000">D:/2000
+                   </Select> 
+<BR>输入保存文件的名字：<Input type=text name="fileName" >
+<BR>输入文件的内容：<BR>
+   <TextArea name="fileContent" Rows="10" Cols="40"></TextArea>
+<BR><Input type=submit value="提交">
+</FORM>
+<% if(ok.isSuccess()==true)
+   {
+%>  你写文件成功,文件所在目录:
+    <jsp:getProperty name="ok" property="filePath" />
+    <BR>文件名字:
+    <jsp:getProperty name="ok" property="fileName"/> 
+<%
+   }
+%>
+</FONT></BODY></HTML>
+7.5.1  上传文件bean
+1 / 上传文件bean
+UpFile.java
+package tom.jiafei;
+import java.io.*;
+import javax.servlet.http.*;
+public class UpFile
+{   HttpServletRequest request;
+    HttpSession session;
+    String upFileMessage="",showImage;
+    public void setRequest(HttpServletRequest request)
+    {  this.request=request;
+    }
+    public void setSession(HttpSession session)
+    {  this.session=session;
+    }
+    public String getShowImage()
+    {  return showImage;
+    }
+    public String getUpFileMessage()
+    {  String fileName=null;
+       try{ String tempFileName=(String)session.getId();//用户的session的id
+            File dir=new File("D:/apache-tomcat-6.0.13/webapps/ch7");
+            File f1=new File(dir,tempFileName);
+            FileOutputStream o=new FileOutputStream(f1);
+            InputStream in=request.getInputStream();
+            byte b[]=new byte[10000];
+            int n;
+            while( (n=in.read(b))!=-1)  //将用户上传的全部信息存入f1
+              {   o.write(b,0,n);  
+              }
+            o.close();
+            in.close();
+            RandomAccessFile random=new RandomAccessFile(f1,"r");
+            int second=1;   //读出f1的第2行，析取出上传文件的名字：
+            String secondLine=null;
+            while(second<=2)  
+               { secondLine=random.readLine();
+                 second++;
+               }
+            //获取第2行中目录符号'\'最后出现的位置
+             int position=secondLine.lastIndexOf('\\');
+           //用户上传的文件的名字是：
+            fileName=secondLine.substring(position+1,secondLine.length()-1);
+            byte  cc[]=fileName.getBytes("ISO-8859-1");
+            fileName=new String(cc);
+            random.seek(0); //再定位到文件f1的开头。
+            //获取第4行回车符号的位置: 
+            long  forthEndPosition=0;
+            int forth=1;
+            while((n=random.readByte())!=-1&&(forth<=4))  
+               {  if(n=='\n')
+                    {  forthEndPosition=random.getFilePointer();
+                      forth++;
+                    }
+                }
+            //根据用户上传文件的名字，将该文件存入磁盘：
+            File f2=new File(dir,fileName); 
+            RandomAccessFile random2=new RandomAccessFile(f2,"rw"); 
+             //确定出文件f1中包含用户上传的文件的内容的最后位置，即倒数第6行。
+            random.seek(random.length());
+            long endPosition=random.getFilePointer();
+            long mark=endPosition;
+            int j=1;
+            while((mark>=0)&&(j<=6))  
+             {   mark--;
+                 random.seek(mark);
+                 n=random.readByte();
+                 if(n=='\n')
+                 {    endPosition=random.getFilePointer();
+                      j++;
+                }
+             }
+          //将random流指向文件f1的第4行结束的位置：
+          random.seek(forthEndPosition);
+          long startPoint=random.getFilePointer();
+         //从f1读出用户上传的文件存入f2（读取第4行结束位置至倒数第6行之间的内容）
+          while(startPoint<endPosition-1)
+            { n=random.readByte();
+              random2.write(n); 
+              startPoint=random.getFilePointer();
+            }
+          random2.close();
+          random.close();
+          f1.delete(); //删除临时文件
+          upFileMessage=fileName+" 上传成功(Successfully UpLoad)";
+          showImage=fileName;
+          return upFileMessage;
+       }
+    catch(Exception exp)
+      {   if(fileName!=null)
+           {  upFileMessage=fileName+"上传失败( Fail to UpLoad)";
+                 return upFileMessage;
+           }
+          else
+           {  upFileMessage="";
+              return upFileMessage;
+           }
+      }
+   }
+}
+ 
+2 / JSP页面
+upfile.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="tom.jiafei.UpFile" %> 
+<jsp:useBean id="upFile" class="tom.jiafei.UpFile" scope="session"/>
+<HTML><BODY bgcolor=yellow size=3> 
+   <br>选择要上传的文件：<br>
+   <FORM action="" method="post" ENCTYPE="multipart/form-data">
+      <INPUT type=FILE name="boy" size="30"> 
+      <BR> <INPUT type="submit" name ="g" value="提交">
+   </FORM>
+   <%  upFile.setRequest(request);
+       upFile.setSession(session);
+   %>
+  <jsp:getProperty  name="upFile" property="upFileMessage"/>
+  <BR> <img src=<jsp:getProperty name="upFile" property="showImage"/> 
+width=80 height=80></img>
+</BODY></HTML>
+7.6.1  查询记录bean
+1 / 查询记录bean
+QueryBean.java
+package tom.jiafei;
+import java.sql.*;
+public class QueryBean
+{   String databaseName="";        //数据库名
+    String tableName="";           //表名
+    String user=""       ;         //用户
+    String secret="" ;            //密码 
+    StringBuffer queryResult;     //查询结果
+    public QueryBean()
+    {  queryResult=new StringBuffer();
+       try{  Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+          }
+       catch(Exception e) {} 
+    }
+    public void setDatabaseName(String s)
+    {  databaseName=s.trim();
+       queryResult=new StringBuffer();  
+    }
+    public String getDatabaseName()
+    {  return databaseName;
+    }
+    public void setTableName(String s)
+    {  tableName=s.trim();
+       queryResult=new StringBuffer();
+    }
+    public String getTableName()
+    {  return tableName;
+    }
+    public void setSecret(String s)
+    {  secret=s.trim();
+       queryResult=new StringBuffer();
+    }
+    public String getSecret()
+    {  return secret;
+    }
+    public void setUser(String s)
+    {  user=s.trim();
+       queryResult=new StringBuffer();
+    }
+    public String getUser()
+    {  return user;
+    } 
+    public StringBuffer getQueryResult()
+    {  Connection con;
+       Statement sql; 
+       ResultSet rs;
+      try { queryResult.append("<table border=1>"); 
+            String uri=
+"jdbc:sqlserver://127.0.0.1:1433;DatabaseName="+databaseName;
+            String id=user;
+            String password=secret;
+            con=DriverManager.getConnection(uri,id,password);
+            DatabaseMetaData metadata=con.getMetaData();
+            ResultSet rs1=metadata.getColumns(null,null,tableName,null);
+            int 字段个数=0;
+            queryResult.append("<tr>");
+            while(rs1.next())
+             { 字段个数++;
+               String clumnName=rs1.getString(4);
+               queryResult.append("<td>"+clumnName+"</td>");
+             }
+            queryResult.append("</tr>");
+            sql=con.createStatement();
+            rs=sql.executeQuery("SELECT * FROM "+tableName);
+            while(rs.next())
+            {  queryResult.append("<tr>");
+               for(int k=1;k<=字段个数;k++) 
+                {  queryResult.append("<td>"+rs.getString(k)+"</td>");
+                }
+               queryResult.append("</tr>");
+            }
+            queryResult.append("</table>");
+            con.close();
+           }
+       catch(SQLException e)
+          {  queryResult.append("请输入正确的用户名和密码");
+          }
+       return queryResult;
+   }    
+}
+2 / JSP页面
+inquire.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="tom.jiafei.QueryBean" %> 
+<jsp:useBean id="base" class="tom.jiafei.QueryBean" scope="page"/>
+<jsp:setProperty name="base" property="databaseName" value="Warehouse"/>
+<jsp:setProperty name="base" property="tableName" value="product"/>
+<jsp:setProperty name="base" property="user" value="sa"/>
+<jsp:setProperty name="base" property="secret" value="sa"/>
+<HTML><Body bgcolor=cyan><Font size=2>
+ 在<jsp:getProperty name="base" property="tableName"/>表查询到记录:
+<BR> <jsp:getProperty name="base" property="queryResult"/>
+</Font></Body></HTML>
+7.6.2  分页显示记录bean
+1 / 分页显示记录bean
+ShowRecordByPage.java
+package tom.jiafei;
+import java.sql.*;
+import com.sun.rowset.*;
+public class ShowRecordByPage
+{   int pageSize=10;                      //每页显示的记录数
+    int pageAllCount=0;                   //分页后的总页数
+    int showPage=1   ;                   //当前显示页 
+    StringBuffer presentPageResult;      //显示当前页内容
+    CachedRowSetImpl rowSet;            //用于存储ResultSet对象
+    String databaseName="";             //数据库名称
+    String tableName="";                //表的名字
+    String user=""       ;             //用户
+    String password="" ;               //密码 
+    String 字段[]=new String[100]  ;
+    int 字段个数=0;
+    public ShowRecordByPage()
+    {  presentPageResult=new StringBuffer();
+       try{Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver")； 
+  }
+       catch(Exception e){} 
+    }
+    public void setPageSize(int size)
+    {  pageSize=size;
+       字段个数=0;
+       String uri=
+"jdbc:sqlserver://127.0.0.1:1433;DatabaseName="+databaseName;
+       try{  Connection con=DriverManager.getConnection(uri,user,password);
+             DatabaseMetaData metadata=con.getMetaData();
+             ResultSet rs1=metadata.getColumns(null,null,tableName,null);
+             int k=0;
+             while(rs1.next())
+              { 字段个数++;
+                字段[k]=rs1.getString(4); //获取字段的名字
+                k++;
+              }
+            Statement sql=con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs=sql.executeQuery("SELECT * FROM "+tableName);
+            rowSet=new CachedRowSetImpl();  //创建行集对象
+            rowSet.populate(rs);
+            con.close();                  //关闭连接 
+            rowSet.last();
+            int m=rowSet.getRow();    //总行数
+            int n=pageSize;
+            pageAllCount=((m%n)==0)?(m/n):(m/n+1);
+           }
+        catch(Exception exp){}
+    }
+    public int getPageSize()
+    {  return pageSize;
+    } 
+    public int getPageAllCount()
+    {  return pageAllCount;
+    } 
+    public void setShowPage(int n)
+    {  showPage=n;
+    }
+    public int getShowPage()
+    { return showPage;
+    }
+    public StringBuffer getPresentPageResult()
+    {  if(showPage>pageAllCount)
+          showPage=1;
+       if(showPage<=0)
+          showPage=pageAllCount;
+       presentPageResult=show(showPage);
+       return presentPageResult; 
+    }
+    public StringBuffer show(int page)
+    {  StringBuffer str=new StringBuffer();
+       str.append("<table border=1>");
+       str.append("<tr>");
+       for(int i=0;i<字段个数;i++)
+       {  str.append("<th>"+字段[i]+"</th>");
+       }  
+       str.append("</tr>");
+       try{  rowSet.absolute((page-1)*pageSize+1);
+             for(int i=1;i<=pageSize;i++)
+              { str.append("<tr>");
+                 for(int k=1;k<=字段个数;k++)
+                  { str.append("<td>"+rowSet.getString(k)+"</td>");
+                  }
+                str.append("</tr>");
+                rowSet.next();
+              }
+          }
+       catch(SQLException exp){}
+       str.append("</table>");   
+       return str;
+    }
+   public void setDatabaseName(String s)
+    {  databaseName=s.trim();
+    }
+    public String getDatabaseName()
+    {  return databaseName;
+    }
+    public void setTableName(String s)
+    {  tableName=s.trim();
+    }
+    public String getTableName()
+    {  return tableName;
+    }
+    public void setPassword(String s)
+    {  password=s.trim();;
+    }
+    public void setUser(String s)
+    {  user=s.trim();
+    }
+    public String getUser()
+    {  return user;
+    } 
+}
+2 / JSP页面
+showRecord.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="java.sql.*" %>
+<%@ page import="tom.jiafei.ShowRecordByPage" %>
+<jsp:useBean id="look" class="tom.jiafei.ShowRecordByPage" scope="session"/>
+<jsp:setProperty name="look" property="databaseName" value="pubs"/>
+<jsp:setProperty name="look" property="tableName" value="jobs"/>
+<jsp:setProperty name="look" property="user" value="sa"/>
+<jsp:setProperty name="look" property="password" value="sa"/>
+ <jsp:setProperty name="look" property="pageSize" value="5"/>
+<HTML><BODY bgcolor=yellow>
+     数据库
+     <jsp:getProperty  name= "look" property="databaseName"/>中
+     <jsp:getProperty  name= "look" property="tableName"/>表的记录将被分页显示。
+<br>共有 <jsp:getProperty name="look" property="pageAllCount"/> 页，
+<br>每页最多显示<jsp:getProperty  name="look"  property="pageSize" />条记录。
+   <jsp:setProperty  name= "look"  property="showPage"  />
+  <jsp:getProperty  name= "look"  property="presentPageResult" />
+  <BR>单击“前一页”或“后一页”按纽查看记录（当前显示第
+  <jsp:getProperty  name= "look"  property="showPage" /> 页）。
+ <Table>
+  <tr><td><FORM action="">
+        <Input type=hidden name="showPage" value="<%=look.getShowPage()-1 %>" >
+        <Input type=submit name="g" value="前一页">
+        </FORM>
+      </td>
+      <td><FORM action="">
+        <Input type=hidden name="showPage" value="<%=look.getShowPage()+1 %>" >
+        <Input type=submit name="g" value="后一页">
+        </Form>
+      </td>
+      <td> <FORM action="">
+           输入页码：<Input type=text name="showPage" size=5 >
+           <Input type=submit name="g" value="提交">
+           </FORM>
+      </td>
+  </tr>
+  </Table>
+</BODY></HTML>
+7.7  标准化考试 bean
+A.txt
+AC
+1. 北京奥运什么时间开幕？<br>
+   A.2008-08-08  B. 2008-08-01 <br>C.2008-10-01 D. 2008-07-08
+******
+2. 下列哪个国家不属于亚洲？<br>
+A.沙特  B.印度 <br>C.巴西  D.越南
+ *****
+endend
+1 / 标准化考试bean
+ 
+Test.java：
+package tom.jiafei;
+import java.io.*;
+public class Test
+{  String filename="",      //存放考题文件名字的字符串
+   correctAnswer="?????",   //存放正确答案的字符串
+   //存放试题和用户提交的答案的字符串
+   testContent="",
+   selection="";
+   int score=0;         //考试者的得分
+   boolean 批分结束=false;
+   File f=null;
+   FileReader in=null;
+   BufferedReader buffer=null;
+   public void setFilename(String name)
+   {  filename=name; 
+     //当选择了新的考题文件后，将用户的答案字符串清空
+     //将分数设为0
+      score=0;
+      selection="";
+      批分结束=false;
+      //读取试题文件的第一行：标准答案
+     try{  f=new File("D:/2000",filename);
+           in=new FileReader(f);
+           buffer=new BufferedReader(in); 
+           correctAnswer=(buffer.readLine()).trim();//读取一行,去掉前后空格
+         }
+     catch(Exception e)
+        { testContent="没有选择试题";
+           buffer=null;
+        }
+  }
+  public String getFilename()
+  {  return filename;
+  }
+  public String getTestContent()  //获取试题的内容
+  { try {  String s=null;
+           StringBuffer temp=new StringBuffer();
+           if(buffer!=null) //如果用户选择了试题文件，buffer就不是空对象
+           {  while((s=buffer.readLine())!=null) //继续取某个试题
+              { if(s.startsWith("**")) //试题结束标志
+                   break;
+                temp.append(s);
+                if(s.startsWith("endend")) //试题文件结束标志
+                 {  in.close();          //关闭和文件的连接
+                   buffer.close(); 
+                 }
+                 testContent=new String(temp);  
+               }
+            }
+            else
+            { testContent=new String("没有选择试题");
+            }
+          }
+      catch(Exception e)
+         { testContent="试题无内容,考试结束了！！";
+           try{ in.close();
+                 buffer.close();
+               }
+            catch(IOException exp){}
+         }
+     return testContent;
+  }
+  public void setSelection(String s)
+  {  selection=selection+s; //将用户提交的答案依次尾加到selection
+  }
+  public int getScore()
+  {  int length1=selection.length();
+     int length2=correctAnswer.length();
+     int i=length1-1;               //用户提交的第i题答案在selection中的位置
+     //判定分数
+     if((i!=-1)&&(i<=length2-1))
+     { if((selection.charAt(i)==correctAnswer.charAt(i))&&(批分结束==false))
+       { score++;
+        }
+       if(i==length2-1)
+        {  批分结束=true;
+        }
+     }
+    return score;
+  }
+}
+ 
+2 / JSP页面
+test.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="tom.jiafei.Test" %>
+ <jsp:useBean id="test" class="tom.jiafei.Test" scope="session"/>
+<HTML><BODY bgcolor=cyan>
+<FORM action="" method="post">
+ 选择试题文件:
+ <Select name="filename"  value="A.txt">
+          <Option value="A.txt" >A.txt
+          <Option value="B.txt"> B.txt
+          <Option value="C.txt"> C.txt
+          <Option value="D.txt"> D.txt
+          <Option value="E.txt"> E.txt
+ </Select>
+<Input type="submit" name="sub" value="确定">
+</FORM>
+ <%-- 过bean设置文件的名字 ,下面的标记只有提交了相应的表单才被执行：--%>
+  <jsp:setProperty  name="test"  property="filename" param="filename"/>
+  你选择的试题是：<jsp:getProperty  name= "test" property="filename"/>
+<%-- 通过bean获取试题的内容--%>
+<br><Font size=3 color=blue>
+    <jsp:getProperty name="test" property="testContent"/>
+    </font>
+<BR><FORM action="" method="post">
+     请选择：
+    <Input type="radio" name="selection" value="A">A
+    <Input type="radio" name="selection" value="B">B
+    <Input type="radio" name="selection" value="C">C
+    <Input type="radio" name="selection" value="D">D
+    <Input type="submit" name="tijiao" value="提交答案">
+</FORM>
+<%-- 下面的标记只有提交了相应的表单才被执行：--%>
+  <jsp:setProperty name="test" property="selection"/>
+  您现在累计得分：<jsp:getProperty name="test" property="score"/>
+</BODY></HTML>
+第8章  Java Servlet基础
+例子1
+JSP页面
+example8_1.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY bgcolor=cyan><Font size=2>
+<FORM action="getNumber" method=post>
+ 输入一个正整数：<Input Type=text name=number >
+ <br><Input Type=submit value="提交">
+</FORM>
+</Font></BODY></HTML>
+ 
+Servlet类
+Computer.java
+ 
+package china.dalian;
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+public class Computer extends HttpServlet
+{  String servletName;
+   public void init(ServletConfig config) throws ServletException
+    { super.init(config);
+      servletName=getServletName();
+    }
+   public void service(HttpServletRequest request,HttpServletResponse response)
+                       throws IOException
+    {  response.setContentType("text/html;charset=GB2312");
+       PrintWriter out=response.getWriter();
+       out.println("<html><body>");
+       String str=request.getParameter("number");
+       out.print("我是一个servlet对象，名字是:"+servletName+"。<br>");
+       out.print("我负责计算并显示"+str+"的因子:<br>"); 
+       int n=0;
+       try{  n=Integer.parseInt(str);
+             for(int i=1;i<=n;i++)
+             {  if(n%i==0)
+                 out.println(" "+i);
+             }
+          }
+        catch(NumberFormatException e)
+          { out.print(" "+e);
+          }       
+       out.println("</body></html>");
+    } 
+}
+例子2）
+JSP页面
+example8_2.jsp
+ 
+<%@ page contentType="text/html;Charset=GB2312" %>
+<HTML><BODY bgcolor=cyan><Font size=3>
+   单击超链接查看俄文字母表：
+   <BR><A href="helpMeShow">查看俄文字母表</A>
+</Font></BODY></HTML>
+ 
+Servlet类
+ShowLetter.java
+ 
+package china.dalian;
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+public class ShowLetter extends HttpServlet
+{  public void init(ServletConfig config) throws ServletException
+    { super.init(config);
+    }
+   public void service(HttpServletRequest request,HttpServletResponse response)
+                       throws IOException
+    {  response.setContentType("text/html;charset=GB2312");
+       PrintWriter out=response.getWriter();
+       out.println("<html><body>");
+       out.print("<BR>小写俄文字母: ");
+       for(char c='а';c<='я';c++)
+       {  out.print(" "+c);
+       }
+       out.print("<BR>大写俄文字母: ");
+       for(char c='А';c<='Я';c++)
+       {  out.print(" "+c);
+       }
+       out.println("</body></html>");
+    } 
+} 
+例子3（效果如图8-6所示）
+JSP页面
+example8_3.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY bgcolor=cyan><Font size=3>
+<A Href="computerPI" >参与计算PI的值<A>
+</BODY></HTML>
+ 
+Servlet类
+ShowLetter.java
+ 
+package china.dalian;
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+public class ComputerPI extends HttpServlet
+{ double sum=0,i=1,j=1;
+  int number=0;
+  public void init(ServletConfig config) throws ServletException
+    {super.init(config);
+    }
+  public synchronized void service(HttpServletRequest request,
+HttpServletResponse response) throws IOException
+    {   response.setContentType("text/html;charset=GB2312");
+        PrintWriter out=response.getWriter();
+        out.println("<html><body>");
+        number++;
+        sum=sum+i/j;
+        j=j+2;
+        i=-i;  
+        out.println("servlet:"+getServletName()+"已经被请求了"+number+"次");
+        out.println("<BR>现在PI的值是:");
+        out.println(4*sum);
+        out.println("</body></html>");
+    } 
+}
+例子4
+JSP页面
+example8_4.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY ><Font size=2>
+<FORM action="show" method=post>
+  输入字符串，提交给servlet(Post方式)：
+  <br><Input Type=text name=str>
+  <Input Type=submit value="提交">
+</FORM>
+<FORM action="show" method=get>
+  输入字符串，提交给servlet(Get方式)：
+  <br><Input Type=text name=str>
+  <Input Type=submit value="提交">
+</FORM>
+</FORM>
+</BODY></HTML>
+ 
+Servlet类
+Show.java
+ 
+package china.dalian;
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+public class Show extends HttpServlet
+{  public void init(ServletConfig config) throws ServletException
+    {super.init(config);
+    }
+   public  void  doPost(HttpServletRequest request,HttpServletResponse response)                         throws ServletException,IOException
+    {   response.setContentType("text/html;charset=GB2312");
+        PrintWriter out=response.getWriter();
+        out.println("<html><body>");
+        String s=request.getParameter("str");
+        byte bb[]=s.getBytes("iso-8859-1");
+        s=new String(bb); 
+        int n=s.length();
+        out.print("\""+s+"\""+"的长度:"+n+"<br>");
+        out.println("</body></html>");
+    } 
+   public  void  doGet(HttpServletRequest request,HttpServletResponse response) 
+                        throws ServletException,IOException
+    {  doPost(request,response);
+       response.setContentType("text/html;charset=GB2312");
+       PrintWriter out=response.getWriter();
+       out.println("<html><body>");
+       String s=request.getParameter("str");
+       byte bb[]=s.getBytes("iso-8859-1");
+       s=new String(bb); 
+       if(s.startsWith("Hello"))
+          out.print("\""+s+"\""+"的前缀是:Hello"); 
+       else
+         out.print("\""+s+"\""+"的前缀不是:Hello"); 
+       out.println("</body></html>"); 
+    }
+}
+例子5
+JSP页面
+example8_5.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY bgcolor=cyan><Font size=2>
+<FORM action="verifyYourMessage" method=post>
+  输入一个实数: <Input Type=text name=number>
+ <br><Input Type=submit value="提交">
+</FORM></BODY></HTML>
+ 
+Servlet类
+Verify.java
+ 
+package china.dalian;
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+public class Verify extends HttpServlet
+{  public void init(ServletConfig config) throws ServletException
+    {super.init(config);
+    }
+   public void doPost(HttpServletRequest request,HttpServletResponse response) 
+                        throws ServletException,IOException
+    {   String number=request.getParameter("number");     
+        try{ double n=Double.parseDouble(number);
+             if(n>2000||n<-2000)
+             { response.sendRedirect("example8_5.jsp");  //重定向
+             }
+             else
+             {  RequestDispatcher dispatcher= 
+                request.getRequestDispatcher("forYouShowMessage");
+                dispatcher.forward(request, response);      //转发
+             }
+           }
+        catch(NumberFormatException e)
+           {  response.sendRedirect("example8_5.jsp");  //重定向
+           }
+    } 
+   public  void  doGet(HttpServletRequest request,HttpServletResponse response) 
+                        throws ServletException,IOException
+    {   doPost(request,response);
+    }
+}
+ShowMessage.java
+ 
+package china.dalian;
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+public class ShowMessage extends HttpServlet
+{  public void init(ServletConfig config) throws ServletException
+    {super.init(config);
+    }
+   public  void  doPost(HttpServletRequest request,HttpServletResponse response)                         throws ServletException,IOException
+    {   response.setContentType("text/html;charset=GB2312");
+        PrintWriter out=response.getWriter();
+        String number=request.getParameter("number"); //获取客户提交的信息
+        double n=Double.parseDouble(number);
+        out.println(number+"的平方:"+(n*n));
+    } 
+   public  void  doGet(HttpServletRequest request,HttpServletResponse response) 
+                        throws ServletException,IOException
+    {  doPost(request,response);
+    }
+}
+例子6
+JSP页面
+example8_6.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY ><Font size=2>
+<% session.setAttribute("message","请您猜数字");
+   int randomNumber=(int)(Math.random()*100)+1;        //获取一个随机数
+   session.setAttribute("savedNumber",new Integer(randomNumber));
+%>
+访问或刷新该页面可以随机得到一个1至100之间的数.
+<BR>单击超链接去猜出这个数:<A href="inputNumber.jsp">去猜数字</A>
+</Font></BODY></HTML>
+inputNumber.jsp
+ 
+<%@ page contentType="text/html;charset=GB2312" %>
+<HTML><BODY ><Font size=2>
+<% String message=(String)session.getAttribute("message"); //获取会话中的信息 
+%>
+<Table border=1>
+<FORM action="handleGuess" method=post>
+ <tr><td> 输入您的猜测:</td>
+ <td><Input Type=text name=clientGuess size=4>
+<Input Type=submit value="提交"></td>
+ </tr><td> 提示信息:</td>
+      <td> <%= message%></td>
+</FORM>
+ <FORM action="example8_6.jsp" method=post>
+  <tr><td>单击按钮重新开始: </td>
+      <td><Input Type=submit value="随机得到一个1至100之间的数字"></td>
+  </tr>
+</FORM>
+</Font></BODY></HTML>
+ 
+Servlet类
+HandleGuess.java
+ 
+package china.dalian;
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+public class HandleGuess extends HttpServlet
+{  public void init(ServletConfig config) throws ServletException
+    {super.init(config);
+    }
+   public  void  doPost(HttpServletRequest request,HttpServletResponse response)                         throws ServletException,IOException
+    {  HttpSession session=request.getSession(true);  //获取客户的session对象
+       String str=request.getParameter("clientGuess"); //获取客户猜测的数字
+       int guessNumber=-1;
+       try{  guessNumber=Integer.parseInt(str);
+           }
+       catch(Exception e)
+          {  response.sendRedirect("inputNumber.jsp");
+          }
+       int savedNumber=
+((Integer)session.getAttribute("savedNumber")).intValue();
+       if(guessNumber<savedNumber)
+        {  session.setAttribute("message","您猜小了");
+           response.sendRedirect("inputNumber.jsp");          
+        }
+       if(guessNumber>savedNumber)
+        {  session.setAttribute("message","您猜大了");
+           response.sendRedirect("inputNumber.jsp");          
+        }
+       if(guessNumber==savedNumber)
+        {  session.setAttribute("message","您猜对了");
+           response.sendRedirect("inputNumber.jsp");          
+        }
+    } 
+   public  void  doGet(HttpServletRequest request,HttpServletResponse response) 
+                        throws ServletException,IOException
+    {   doPost(request,response);
+    }
+}
+第9章  MVC模式
+9.4.1  计算三角形和梯形的面积
+web.xml
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app>
+<servlet>
+    <servlet-name>computerArea</servlet-name>
+    <servlet-class>user.yourservlet.HandleArea</servlet-class>
+</servlet>
+<servlet-mapping>
+  <servlet-name>computerArea</servlet-name>
+  <url-pattern>/lookArea</url-pattern>
+</servlet-mapping>
+</web-app>
+1．模型（Javabean）
+Area.java
+package user.yourbean;
+public class Area
+{  double a,b,c,area; 
+   String mess;
+   public void setMess(String mess)
+   { this.mess=mess;
+   }
+   public String getMess()
+   { return mess;
+   } 
+   public void setA(double a)
+   { this.a=a;
+   }
+  public void setB(double b)
+   { this.b=b;
+   }
+  public void setC(double c)
+   { this.c=c;
+   }
+  public void setArea(double s)
+   { area=s;
+   }
+  public double getArea()
+   {  return area;
+   }
+}
+2．控制器（servlet）
+HandleArea.java
+package user.yourservlet;
+import user.yourbean.Area;
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+public class HandleArea extends HttpServlet
+{  public void init(ServletConfig config) throws ServletException
+    {super.init(config);
+    }
+   public void doPost(HttpServletRequest request,HttpServletResponse response) 
+                        throws ServletException,IOException
+    { Area dataBean=new Area();  //创建Javabean对象
+      request.setAttribute("data",dataBean);//将dataBean存储到request对象中
+      try{  double a=Double.parseDouble(request.getParameter("a"));
+            double b=Double.parseDouble(request.getParameter("b"));
+            double c=Double.parseDouble(request.getParameter("c"));
+            dataBean.setA(a);            //将数据存储在dataBean中 
+            dataBean.setB(b);            
+            dataBean.setC(c); 
+            double s=-1;
+            double p=(a+b+c)/2.0;
+            if(a+b>c&&a+c>b&&b+c>a)
+              s=Math.sqrt(p*(p-a)*(p-b)*(p-c));
+            dataBean.setArea(s);         //将数据存储在dataBean中
+            dataBean.setMess("三角形面积");  
+         }
+        catch(Exception e)
+         {   dataBean.setArea(-1);
+             dataBean.setMess(""+e);  
+         }
+       RequestDispatcher dispatcher=
+request.getRequestDispatcher("showResult.jsp");
+//请求showResult.jsp显示dataBean中的数据:
+       dispatcher.forward(request,response);       } 
+   public  void  doGet(HttpServletRequest request,HttpServletResponse response) 
+                        throws ServletException,IOException
+    { Area dataBean=new Area();  //创建Javabean对象
+      request.setAttribute("data",dataBean);//将dataBean存储到request对象中
+      try{  double a=Double.parseDouble(request.getParameter("a"));
+            double b=Double.parseDouble(request.getParameter("b"));
+            double c=Double.parseDouble(request.getParameter("c"));
+            dataBean.setA(a);            //将数据存储在dataBean中 
+            dataBean.setB(b);            
+            dataBean.setC(c); 
+            double s=-1;
+            s=(a+b)*c/2.0;
+            dataBean.setArea(s);         //将数据存储在dataBean中 
+            dataBean.setMess("梯形面积");   
+         }
+        catch(Exception e)
+         {   dataBean.setArea(-1);
+             dataBean.setMess(""+e);  
+         }
+       RequestDispatcher dispatcher=
+request.getRequestDispatcher("showResult.jsp");
+//请求showResult.jsp显示dataBean中的数据 :
+       dispatcher.forward(request,response);  
+  }
+}
+3．视图（JSP页面）
+inputData.jsp
+<%@ page contentType="text/html;Charset=GB2312" %>
+<HTML><BODY bgcolor=cyan><Font size=2>
+<FORM action="lookArea" Method="post" >
+   三角形：
+  <BR>输入边A:<Input type=text name="a" size=4>
+      输入边B:<Input type=text name="b" size=4>
+      输入边C:<Input type=text name="c" size=4>
+  <Input type=submit value="提交">
+</FORM>
+<FORM action="lookArea" Method="get" >
+   梯形：
+  <BR>输入上底:<Input type=text name="a" size=4>
+      输入下底:<Input type=text name="b" size=4>
+      输入高:  <Input type=text name="c" size=4>
+  <Input type=submit value="提交">
+</FORM>
+</Font></BODY></HTML>
+showResult.jsp
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="user.yourbean.Area"%> 
+<jsp:useBean id="data" type="user.yourbean.Area" scope="request"/>
+<HTML><BODY bgcolor=yellow>
+   <jsp:getProperty name="data" property="mess"/>:
+   <jsp:getProperty name="data" property="area"/>
+</BODY></HTML>
+9.4.2  简单的计算器
+1．模型（Javabean）
+ComputerBean.java
+package user.yourbean;
+public class ComputerBean 
+ {  double numberOne,numberTwo,result;
+    String operator="+";
+   public void setNumberOne(double n)
+   {  numberOne=n;
+   }
+   public double getNumberOne()
+   {  return numberOne; 
+   }
+   public void setNumberTwo(double n)
+   {  numberTwo=n;
+   }
+   public double getNumberTwo()
+   {  return numberTwo; 
+   }
+   public void setOperator(String s)
+   {  operator=s.trim();;
+   }
+   public String getOperator()
+   {  return operator;
+   }
+   public void setResult(double r)
+   {  result=r; 
+   }
+   public double getResult()
+   {  return result; 
+   }
+}
+2．控制器（servlet）
+HandeComputer.java
+package user.yourservlet;
+import user.yourbean.ComputerBean;
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+public class HandleComputer extends HttpServlet
+{  public void init(ServletConfig config) throws ServletException
+    {super.init(config);
+    }
+   public  void  doPost(HttpServletRequest request,HttpServletResponse response)                         throws ServletException,IOException
+    {   ComputerBean dataBean=null;
+        HttpSession session=request.getSession(true);
+        try{  dataBean=(ComputerBean)session.getAttribute("ok");
+              if(dataBean==null)
+              { dataBean=new ComputerBean(); //创建Javabean对象
+//将dataBean存储到session对象中: 
+                session.setAttribute("ok",dataBean);
+              }
+           }
+        catch(Exception exp)
+           { dataBean=new ComputerBean();  //创建Javabean对象
+             session.setAttribute("ok",dataBean);//将dataBean存储到session对象中  
+           } 
+        double numberOne=
+Double.parseDouble(request.getParameter("numberOne"));
+        double numberTwo=
+Double.parseDouble(request.getParameter("numberTwo"));
+        String operator=request.getParameter("operator");
+        double result=0;
+        if(operator.equals("+"))
+         {  result=numberOne+numberTwo;
+         } 
+       else if(operator.equals("-"))
+         {  result=numberOne-numberTwo;
+         }
+       else if(operator.equals("*"))
+         {  result=numberOne*numberTwo;
+         }
+       else if(operator.equals("/"))
+        {   result=numberOne/numberTwo;
+        }
+       dataBean.setNumberOne(numberOne);     //将数据存储在dataBean中 
+       dataBean.setNumberTwo(numberTwo);  
+       dataBean.setOperator(operator);   
+       dataBean.setResult(result);
+       RequestDispatcher dispatcher=
+request.getRequestDispatcher("lookResult.jsp");
+//请求lookResult.jsp显示dataBean中的数据 :
+       dispatcher.forward(request, response);   
+ } 
+   public  void  doGet(HttpServletRequest request,HttpServletResponse response) 
+                        throws ServletException,IOException
+    {   doPost(request,response);
+    }
+}
+ 
+3．视图（JSP页面）
+inputNumber.jsp
+<%@ page contentType="text/html;Charset=GB2312" %>
+<HTML><BODY bgcolor=cyan><Font size=2>
+  <FORM action="helpComputer" method=post name=form>
+   <table>
+   <tr><td> 输入两个数:</td>
+       <td> <Input type=text name="numberOne" value=0 size=6></td>
+     <td> <Input type=text name="numberTwo" value=0 size=6></td>
+   </tr>
+   <tr><td>选择运算符号:</td>
+       <td> <Select name="operator">
+              <Option value="+">+(加)
+              <Option value="-">-（减）
+              <Option value="*">*（乘）
+              <Option value="/">/（除）
+            </Select> 
+       </td>
+       <td> <INPUT TYPE="submit" value="提交选择" name="submit"></td>
+   </tr>
+   </table>
+   </FORM> 
+</Font></BODY></HTML>
+lookResult.jsp（效果如图9-6）
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="user.yourbean.ComputerBean" %> 
+<HTML><BODY bgcolor=yellow><Font size=2>
+ <jsp:useBean id="ok" type="user.yourbean.ComputerBean" scope="session"/>
+   运算结果：
+  <jsp:getProperty name="ok" property="numberOne"/>
+  <jsp:getProperty name="ok" property="operator"/>
+  <jsp:getProperty name="ok" property="numberTwo"/> =
+  <jsp:getProperty name="ok" property="result"/> 
+   <FORM action="helpComputer" method=post name=form>
+   <table>
+   <tr><td> 输入两个数:</td>
+       <td> <Input type=text name="numberOne"
+                   value="<jsp:getProperty name="ok" property="result"/>"
+                   size=10></td>
+     <td> <Input type=text name="numberTwo" value=0 size=10></td>
+   </tr>
+   <tr>
+      <td>选择运算符号:</td>
+      <td> <Select name="operator">
+              <Option value="+">+(加)
+              <Option value="-">-（减）
+              <Option value="*">*（乘）
+              <Option value="/">/（除）
+            </Select> 
+       </td>
+       <td> <INPUT TYPE="submit" value="提交选择" name="submit"></td>
+   </tr>
+   </table>
+</BODY></HTML>
+ 
+9.5   MVC模式与文件操作
+1．模型（Javabean）
+FileMessage.java
+package user.yourbean;
+public class FileMessage 
+ {  String filePath,fileName,fileContent;
+    long fileLength;
+   public void setFilePath(String str)
+   {  filePath=str;
+   }
+   public String getFilePath()
+   {  return filePath; 
+   }
+   public void setFileName(String str)
+   {  fileName=str;
+   }
+   public String getFileName()
+   {  return fileName; 
+   }
+   public void setFileContent(String str)
+   {  fileContent=str;
+   }
+   public String getFileContent()
+   {  return fileContent; 
+   }
+   public void setFileLength(long len)
+   {  fileLength=len; 
+   }
+   public long getFileLength()
+   {  return fileLength; 
+   }
+}
+2．控制器（servlet）
+HandeFile.java
+package user.yourservlet;
+import user.yourbean.FileMessage;
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+public class HandleFile extends HttpServlet
+{  public void init(ServletConfig config) throws ServletException
+    {super.init(config);
+    }
+   public  void  doPost(HttpServletRequest request,
+HttpServletResponse response)  throws ServletException,IOException
+    {   FileMessage file=new FileMessage();  //创建Javabean对象
+        request.setAttribute("file",file);
+        String filePath=request.getParameter("filePath");
+        String fileName=request.getParameter("fileName");
+        file.setFilePath(filePath);   //将数据存储在file中 
+        file.setFileName(fileName);   
+        try{ File f=new File(filePath,fileName);
+             long length=f.length();
+             file.setFileLength(length);
+             FileReader in=new FileReader(f) ;
+             BufferedReader inTwo=new BufferedReader(in);
+             StringBuffer stringbuffer=new StringBuffer(); 
+             String s=null;
+             while ((s=inTwo.readLine())!=null) 
+             {  stringbuffer.append("\n"+s);
+             }
+            String content=new String(stringbuffer);
+            file.setFileContent(content);
+           }
+         catch(IOException exp){} 
+         RequestDispatcher dispatcher=
+ request.getRequestDispatcher("showFile.jsp");
+         dispatcher.forward(request, response);
+    } 
+   public  void  doGet(HttpServletRequest request,HttpServletResponse response) 
+                        throws ServletException,IOException
+    {   doPost(request,response);
+    }
+}
+3．视图（JSP页面）
+choiceFile.jsp
+<%@ page contentType="text/html;Charset=GB2312" %>
+<HTML><BODY bgcolor=cyan><Font size=2>
+ <FORM action="helpReadFile" method="post" name="form">
+ 输入文件的路径(如:d:/2000):
+ <INPUT type="text" name="filePath" size=12>
+ <BR>输入文件的名字(如:Hello.java):
+ <INPUT type="text" name="fileName" size=9>
+ <BR><INPUT type="submit" value="读取" name="submit">
+ </FORM>
+</Font></BODY></HTML>
+showFile.jsp
+<%@ page import="user.yourbean.FileMessage" %> 
+<%@ page contentType="text/html;charset=GB2312" %>
+ <jsp:useBean id="file" type="user.yourbean.FileMessage" scope="request"/>
+<HTML><BODY bgcolor=yellow><Font size=2>
+  文件的位置: <jsp:getProperty name="file" property="filePath"/>,
+  文件的名字：<jsp:getProperty name="file" property="fileName"/>,
+  文件的长度：<jsp:getProperty name="file" property="fileLength"/> 字节。
+  <BR>文件的内容：
+  <BR><TextArea  rows="6" cols="60">
+       <jsp:getProperty name="file" property="fileContent"/>
+     </TextArea>
+</Font></BODY></HTML>
+9.6   MVC模式与数据库操作
+1．模型（Javabean）
+ShowRecordByPage.java
+package user.yourbean;
+import com.sun.rowset.*; 
+public class ShowRecordByPage
+{   CachedRowSetImpl rowSet=null;         //存储表中全部记录的行集对象
+    int pageSize=10;                      //每页显示的记录数
+    int pageAllCount=0;                   //分页后的总页数
+    int showPage=1   ;                    //当前显示页 
+    StringBuffer presentPageResult;      //显示当前页内容
+    String databaseName="";              //数据库名称
+    String tableName="";                 //表的名字
+    StringBuffer formTitle=null;         //表头
+    public void setRowSet(CachedRowSetImpl set)
+    {  rowSet=set;
+    }
+    public CachedRowSetImpl getRowSet()
+    {  return rowSet;
+    }
+    public void setPageSize(int size)
+    {  pageSize=size;
+    }
+    public int getPageSize()
+    {  return pageSize;
+    } 
+    public int getPageAllCount()
+    {  return pageAllCount;
+    } 
+   public void setPageAllCount(int n)
+    {  pageAllCount=n; 
+    }
+    public void setShowPage(int n)
+    {  showPage=n;
+    }
+    public int getShowPage()
+    { return showPage;
+    }
+   public void setPresentPageResult(StringBuffer p)
+    {  presentPageResult=p; 
+    }
+    public StringBuffer getPresentPageResult()
+    {  return presentPageResult; 
+    }
+    public void setDatabaseName(String s)
+    {  databaseName=s.trim();
+    }
+    public String getDatabaseName()
+    {  return databaseName;
+    }
+    public void setTableName(String s)
+    {  tableName=s.trim();
+    }
+    public String getTableName()
+    {  return tableName;
+    }
+    public void setFormTitle(StringBuffer s)
+    {  formTitle=s;
+    }
+    public StringBuffer getFormTitle()
+    {  return formTitle;
+    } 
+}
+2．控制器（servlet）
+HandleDatabase.java
+package user.yourservlet;
+import user.yourbean.ShowRecordByPage;
+import com.sun.rowset.*;
+import java.sql.*;
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+public class HandleDatabase extends HttpServlet
+{  int 字段个数;
+   CachedRowSetImpl rowSet=null;
+   public void init(ServletConfig config) throws ServletException
+    { super.init(config);
+      try {  Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+          }
+       catch(Exception e){} 
+    }
+   public  void  doPost(HttpServletRequest request,HttpServletResponse response)                         throws ServletException,IOException
+    {   Connection con; 
+        StringBuffer presentPageResult=new StringBuffer();
+        ShowRecordByPage databaseBean=null;
+        HttpSession session=request.getSession(true);
+        try{  databaseBean=(ShowRecordByPage)session.getAttribute("database");
+              if(databaseBean==null)
+              { databaseBean=new ShowRecordByPage(); //创建Javabean对象
+                session.setAttribute("database",databaseBean);
+              }
+           }
+        catch(Exception exp)
+           {  databaseBean=new ShowRecordByPage();
+              session.setAttribute("database",databaseBean);
+           } 
+        String databaseName=request.getParameter("databaseName");
+        String tableName=request.getParameter("tableName");
+        String ps= request.getParameter("pageSize");
+        if(ps!=null)
+        {  try{ int mm=Integer.parseInt(ps);
+                databaseBean.setPageSize(mm);
+              }
+           catch(NumberFormatException exp)
+              { databaseBean.setPageSize(1);
+              } 
+        }
+        int showPage=databaseBean.getShowPage();
+        int pageSize=databaseBean.getPageSize();
+        boolean boo=databaseName!=null&&tableName!=null&&
+                    databaseName.length()>0&&tableName.length()>0;
+        if(boo) 
+        { databaseBean.setDatabaseName(databaseName);//数据存储在databaseBean中
+          databaseBean.setTableName(tableName);      //数据存储在databaseBean中 
+          String uri=
+"jdbc:sqlserver://127.0.0.1:1433;DatabaseName="+databaseName;
+          try{  字段个数=0;
+                con=DriverManager.getConnection(uri,"sa","sa");
+                DatabaseMetaData metadata=con.getMetaData();
+                ResultSet rs1=metadata.getColumns(null,null,tableName,null);
+                int k=0;
+                String 字段[]=new String[100]  ;
+                while(rs1.next())
+                { 字段个数++;
+                  字段[k]=rs1.getString(4); //获取字段的名字
+                  k++;
+                }
+                StringBuffer str=new StringBuffer();
+                str.append("<tr>");
+                for(int i=0;i<字段个数;i++)
+                 {  str.append("<th>"+字段[i]+"</th>");
+                 }  
+                str.append("</tr>");
+                databaseBean.setFormTitle(str);  //数据存储在databaseBean中
+                Statement sql=
+con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                                                ResultSet.CONCUR_READ_ONLY);
+                ResultSet rs=sql.executeQuery("SELECT * FROM "+tableName);
+                rowSet=new CachedRowSetImpl();  //创建行集对象
+                rowSet.populate(rs);
+                con.close();                     //关闭连接
+                databaseBean.setRowSet(rowSet);  //数据存储在databaseBean中
+                rowSet.last();
+                int m=rowSet.getRow();           //总行数
+                int n=pageSize;
+                int pageAllCount=((m%n)==0)?(m/n):(m/n+1);
+                databaseBean.setPageAllCount(pageAllCount);
+              }
+            catch(SQLException exp){}
+        }
+        String whichPage=request.getParameter("whichPage");
+        if(whichPage==null||whichPage.length()==0)
+        {  showPage=1;
+           databaseBean.setShowPage(showPage);
+           CachedRowSetImpl rowSet=databaseBean.getRowSet();
+           if(rowSet!=null)
+           { presentPageResult=show(showPage,pageSize,rowSet);
+             databaseBean.setPresentPageResult(presentPageResult); 
+           }
+        }
+        else if(whichPage.equals("nextPage"))
+        {  showPage++;
+           if(showPage>databaseBean.getPageAllCount())
+             showPage=1;
+           databaseBean.setShowPage(showPage);
+           CachedRowSetImpl rowSet=databaseBean.getRowSet();
+           if(rowSet!=null)
+           { presentPageResult=show(showPage,pageSize,rowSet);
+             databaseBean.setPresentPageResult(presentPageResult); 
+           }
+        }
+       else if(whichPage.equals("previousPage"))
+        {  showPage--;
+           if(showPage<=0)
+             showPage=databaseBean.getPageAllCount();
+           databaseBean.setShowPage(showPage);
+           CachedRowSetImpl rowSet=databaseBean.getRowSet();
+           if(rowSet!=null)
+           { presentPageResult=show(showPage,pageSize,rowSet);
+             databaseBean.setPresentPageResult(presentPageResult); 
+           }
+        } 
+      databaseBean.setPresentPageResult(presentPageResult);
+      RequestDispatcher dispatcher=
+request.getRequestDispatcher("showRecord.jsp");
+      dispatcher.forward(request, response);//请求showRecord.jsp显示数据
+    } 
+   public StringBuffer show(int page,int pageSize,CachedRowSetImpl rowSet)
+    {  StringBuffer str=new StringBuffer();
+       try{  rowSet.absolute((page-1)*pageSize+1);
+             for(int i=1;i<=pageSize;i++)
+              { str.append("<tr>");
+                 for(int k=1;k<=字段个数;k++)
+                  { str.append("<td>"+rowSet.getString(k)+"</td>");
+                  }
+                str.append("</tr>");
+                rowSet.next();
+              }
+          }
+       catch(SQLException exp){}
+       return str;
+    }
+   public  void  doGet(HttpServletRequest request,HttpServletResponse response) 
+                        throws ServletException,IOException
+    {   doPost(request,response);
+    }
+}
+3．视图（JSP页面）
+choiceDatabase.jsp
+<%@ page contentType="text/html;Charset=GB2312" %>
+<HTML><BODY bgcolor=cyan><Font size=2>
+    <FORM action="helpReadRecord" method="post" name="form">
+      输入SQlServer2000数据库的名字(例如:pubs、Warehouse):
+     <BR><INPUT type="text" name="databaseName">
+     <BR>输入相应数据库中表的名字(例如:jobs、product):
+     <BR><INPUT type="text" name="tableName">
+     <BR>输入每页显示的记录数：
+        <INPUT type="text" value="2" name="pageSize" size=6> 
+        <INPUT type="submit" value="提交" name="submit">
+    </FORM>
+</Font></BODY></HTML>
+showRecord.jsp
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="user.yourbean.ShowRecordByPage" %> 
+<HTML><BODY bgcolor=yellow><Font size=2>
+ <jsp:useBean id="database"
+type="user.yourbean.ShowRecordByPage" scope="session"/>
+   您查询的数据库：<jsp:getProperty name="database" property="databaseName"/>,
+   查询的表：<jsp:getProperty name="database" property="tableName"/>。
+   <BR>记录分<jsp:getProperty name="database" property="pageAllCount"/>页，
+   每页最多显示<jsp:getProperty name="database" property="pageSize"/>条记录,
+   目前显示第<jsp:getProperty name="database" property="showPage"/>页。
+   <table border=1>
+     <jsp:getProperty name="database" property="formTitle"/>  
+     <jsp:getProperty name="database" property="presentPageResult"/>   
+   </table>
+    <table> 
+      <tr><td>
+          <FORM action="helpReadRecord" method="post" name="form">
+          <INPUT type="hidden" value="previousPage" name="whichPage">
+          <INPUT type="submit" value="上一页" name="submit">
+          </FORM>
+          </td>
+         <td>
+          <FORM action="helpReadRecord" method="post" name="form">
+          <INPUT type="hidden" value="nextPage" name="whichPage">
+          <INPUT type="submit" value="下一页" name="submit">
+          </FORM>
+          </td>
+     </tr>
+    </FORM>
+</Font></BODY></HTML>
+9.7.1  注册
+1．模型（Javabean）
+Register.java
+package user.yourbean;
+public class Register
+{   String logname="",password="",email="";
+    String backNews; 
+    public void setLogname(String name)
+    {  logname=name;
+    }
+   public String getLogname()
+    { return logname;
+    }
+   public void setPassword(String pw)
+    {  password=pw;
+    }
+   public String getPassword()
+    { return password;
+    }
+   public void setEmail(String em)
+    {  email=em;
+    }
+   public String getEmail()
+    {  return email;
+    }
+   public String getBackNews()
+    { return backNews;
+    }
+   public void setBackNews(String s)
+    { backNews=s;
+    } 
+}
+2．控制器（servlet）
+HandleRegister.java
+package user.yourservlet;
+import user.yourbean.Register;
+import java.sql.*;
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+public class HandleRegister extends HttpServlet
+{   public void init(ServletConfig config) throws ServletException
+    { super.init(config);
+      try {  Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+          }
+       catch(Exception e){} 
+    }
+   public String handleString(String s)
+   {   try{ byte bb[]=s.getBytes("iso-8859-1");
+            s=new String(bb);
+          }
+       catch(Exception ee){} 
+       return s;  
+   }
+   public  void  doPost(HttpServletRequest request,HttpServletResponse response)                         throws ServletException,IOException
+    {   Connection con; 
+        Statement sql; 
+        Register reg=new Register();   //创建Javabean对象
+        request.setAttribute("register",reg);//将dataBean存储到request对象中
+        String logname=request.getParameter("logname").trim(),
+        password=request.getParameter("password").trim(),
+        email=request.getParameter("email").trim();
+        String uri="jdbc:sqlserver://127.0.0.1:1433;DatabaseName=Welcome";
+        if(logname==null)
+           logname="";
+        if(password==null)
+           password="";
+        boolean isLD=true;
+        for(int i=0;i<logname.length();i++)
+        {  char c=logname.charAt(i);
+           if(!((c<='z'&&c>='a')||(c<='Z'&&c>='A')||(c<='9'&&c>='0'))) 
+             isLD=false;
+        } 
+        boolean boo=logname.length()>0&&password.length()>0&&isLD;
+        String backNews="";
+        try{ con=DriverManager.getConnection(uri,"sa","sa");
+             String insertCondition=
+             "INSERT INTO member VALUES ('"+
+logname+"','"+password+"','"+email+"')";
+              sql=con.createStatement();
+             if(boo)
+             { int m=sql.executeUpdate(insertCondition);
+               if(m!=0)
+                 {  backNews="注册成功";
+                    reg.setBackNews(backNews);
+                    reg.setLogname(logname);
+                    reg.setPassword(handleString(password));
+                    reg.setEmail(handleString(email));
+                  }
+              }
+             else
+              {  backNews="信息填写不完整或名字中有非法字符";
+                 reg.setBackNews(backNews);  
+              }
+             con.close();
+           }
+        catch(SQLException exp)
+          {  backNews="该会员名已被使用，请您更换名字"+exp;
+             reg.setBackNews(backNews); 
+          }
+        RequestDispatcher dispatcher= 
+        request.getRequestDispatcher("show.jsp");//请求show.jsp显示信息
+        dispatcher.forward(request, response);
+    }
+   public  void  doGet(HttpServletRequest request,HttpServletResponse response) 
+                        throws ServletException,IOException
+    {   doPost(request,response);
+    }
+}
+3．视图（JSP页面）
+register.jsp
+<%@ page contentType="text/html;charset=GB2312" %>
+<head>
+<table>
+ <td><A href="register.jsp"><font size=2>用户注册</font></A></td>
+ <td><A href="login.jsp"><font size=2>用户登录</font></A></td>
+</table>
+</head>
+<HTML><BODY bgcolor=cyan><Font size=2><CENTER>
+<FORM action="helpRegister" name=form>
+<table>
+    输入您的信息，用户名称必须由字母和数字组成，带*号项必须填写。
+   <tr><td>用户名称:</td><td><Input type=text name="logname" >*</td></tr>
+   <tr><td>设置密码:</td><td><Input type=password name="password">*</td></tr>
+   <tr><td>电子邮件:</td><td><Input type=text name="email"></td></tr>
+   <tr><td><Input type=submit name="g" value="提交"></td></tr>
+</table>
+</Form></CENTER>
+</Body></HTML>
+show.jsp（效果如图9-13）
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="user.yourbean.Register"%> 
+<jsp:useBean id="register" type="user.yourbean.Register" scope="request"/>
+<head>
+<table>
+ <td><A href="register.jsp"><font size=2>用户注册</font></A></td>
+ <td><A href="login.jsp"><font size=2>用户登录</font></A></td>
+</table>
+</head>
+<HTML><BODY bgcolor=yellow>
+<CENTER>
+  <Font size=4 color=blue >
+    <BR><jsp:getProperty name="register"  property="backNews"/>
+  </Font> 
+<table>
+ <tr><td>注册的名称:</td>
+     <td><jsp:getProperty name="register" property="logname"/></td>
+ </tr>
+ <tr><td>注册的电子邮件:</td>
+     <td><jsp:getProperty name="register" property="email"/></td>
+ </tr>
+</table>
+</CENTER></BODY></HTML>
+9.7.2  登录
+1．模型（Javabean）
+Login.java
+package user.yourbean;
+public class Login
+{   String logname,
+           password,
+           backNews="";   
+   boolean success=false; 
+   public void setLogname(String name)
+    {  logname=name;
+    }
+   public String getLogname()
+    {return logname;
+    }
+   public void setPassword(String pw)
+    {  password=pw;
+    }
+    public String getPassword()
+    {return password;
+    }
+   public String getBackNews()
+    { return backNews;
+    }
+   public void setBackNews(String s)
+    { backNews=s;
+    } 
+   public void setSuccess(boolean b)
+    {  success=b;
+    }
+   public boolean getSuccess()
+   {   return success;
+   }
+}
+2．控制器（servlet）
+HandleLogin.java
+package user.yourservlet;
+import user.yourbean.Login;
+import java.sql.*;
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+public class HandleLogin extends HttpServlet
+{   public void init(ServletConfig config) throws ServletException
+    { super.init(config);
+      try {  Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+          }
+       catch(Exception e){} 
+    }
+   public String handleString(String s)
+   {   try{ byte bb[]=s.getBytes("iso-8859-1");
+            s=new String(bb);
+          }
+       catch(Exception ee){} 
+       return s;  
+   }
+   public  void  doPost(HttpServletRequest request,HttpServletResponse response)                         throws ServletException,IOException
+    {   Connection con; 
+        Statement sql; 
+        Login loginBean=null;
+        String backNews="";
+        HttpSession session=request.getSession(true);
+        try{  loginBean=(Login)session.getAttribute("login");
+              if(loginBean==null)
+              { loginBean=new Login();  
+                session.setAttribute("login",loginBean);
+              }
+           }
+        catch(Exception ee)
+          {  loginBean=new Login();  
+             session.setAttribute("login",loginBean);
+          }
+        String logname=request.getParameter("logname").trim(),
+        password=request.getParameter("password").trim();
+        boolean ok=loginBean.getSuccess();
+        logname=handleString(logname);
+        password=handleString(password);
+        if(ok==true&&logname.equals(loginBean.getLogname()))
+        {  backNews=logname+"已经登录了";
+           loginBean.setBackNews(backNews);
+        }
+        else
+        {  String uri="jdbc:sqlserver://127.0.0.1:1433;DatabaseName=Welcome";
+           boolean boo=(logname.length()>0)&&(password.length()>0);  
+           try{ con=DriverManager.getConnection(uri,"sa","sa");
+                String condition=
+               "select * from member where logname ='"
++logname+"' and password ='"+password+"'";
+                sql=con.createStatement();  
+                if(boo)
+                { ResultSet rs=sql.executeQuery(condition);
+                  boolean m=rs.next();
+                  if(m==true)
+                  {  backNews="登录成功";
+                     loginBean.setBackNews(backNews);
+                     loginBean.setSuccess(true);
+                     loginBean.setLogname(logname);
+                  }
+                 else
+                  {  backNews="您输入的用户名不存在，或密码不般配";
+                     loginBean.setBackNews(backNews); 
+                     loginBean.setSuccess(false); 
+                     loginBean.setLogname(logname);
+                     loginBean.setPassword(password);
+                  }
+                }
+                else
+                { backNews="您输入的用户名不存在，或密码不般配";
+                  loginBean.setBackNews(backNews); 
+                  loginBean.setSuccess(false); 
+                  loginBean.setLogname(logname);
+                  loginBean.setPassword(password);
+                }
+                con.close();
+              }
+           catch(SQLException exp)
+             {  backNews=""+exp;
+                loginBean.setBackNews(backNews); 
+                loginBean.setSuccess(false); 
+             }
+        }
+       RequestDispatcher dispatcher=
+request.getRequestDispatcher("showSuccess.jsp");
+       dispatcher.forward(request, response);
+    }
+   public  void  doGet(HttpServletRequest request,HttpServletResponse response) 
+                        throws ServletException,IOException
+    {   doPost(request,response);
+    }
+}
+3．视图（JSP页面）
+login.jsp
+<%@ page contentType="text/html;charset=GB2312" %>
+<head>
+<table>
+ <td><A href="register.jsp"><font size=2>用户注册</font></A></td>
+ <td><A href="login.jsp"><font size=2>用户登录</font></A></td>
+</table>
+</head>
+<HTML><BODY bgcolor=cyan><Font size=2><CENTER>
+<BR><BR>
+<table border=2>
+<tr> <th>请您登录</th></tr>
+<FORM action="helpLogin" Method="post">
+<tr><td>登录名称:<Input type=text name="logname"></td></tr>
+<tr><td>输入密码:<Input type=password name="password"></td></tr>
+</table>
+<BR><Input type=submit name="g" value="提交">
+</Form></CENTER>
+</BODY></HTML>
+showSuccess.jsp（效果如图9-15）
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="user.yourbean.Login"%> 
+<jsp:useBean id="login" type="user.yourbean.Login" scope="session"/>
+<head>
+<table>
+ <td><A href="register.jsp"><font size=2>用户注册</font></A></td>
+ <td><A href="login.jsp"><font size=2>用户登录</font></A></td>
+</table>
+</head>
+<HTML><BODY bgcolor=yellow >
+<CENTER><Font size=4 color=blue >
+   <BR> <jsp:getProperty name="login"  property="backNews"/>
+   </Font> 
+ <% if(login.getSuccess()==true)
+     {
+ %>    <BR>登录用户名称:<jsp:getProperty name="login" property="logname"/>
+ <%  }
+   else
+    { 
+ %>  <BR>登录用户名称:<jsp:getProperty name="login" property="logname"/>
+     <BR>登录用户密码:<jsp:getProperty name="login" property="password"/>
+ <% }
+ %>
+</FONT></CENTER>
+</BODY></HTML>
+9.7.3  验证
+lookPic.jsp
+<%@ page contentType="text/html;charset=GB2312" %>
+<%@ page import="user.yourbean.Login" %>
+<head>
+<table>
+ <td><A href="register.jsp"><font size=2>用户注册</font></A></td>
+ <td><A href="login.jsp"><font size=2>用户登录</font></A></td>
+</table>
+</head>
+<%  //获取用户登录时的Javabean(9.7.2中登录控制器所创建的Javabean)：
+       Login login=(Login)session.getAttribute("login");
+       boolean ok=true; 
+       if(login==null)
+       { ok=false; 
+         response.sendRedirect("login.jsp");   //重定向到登录页面
+       }
+%>
+<HTML><BODY bgcolor=cyan><Font size=2><CENTER>
+<image src="Sunset.jpg" width=220 height=200></image>
+</CENTER></BODY></HTML>
